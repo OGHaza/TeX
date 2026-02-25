@@ -1,42 +1,48 @@
-<div class=" hidden sm:block fixed w-screen top-0 z-30">
-    <div class="bg-gray-800">
-        <div class="flex h-16 relative w-11/12 m-auto items-center justify-between">
-            <div class="flex items-center space-x-8 h-full text-lg font-semibold">
-                <a [ngClass]="{'text-primary': isRoute('movie')}" routerLink="/movies" class="header-button" translate>header.movies</a>
-                <a [ngClass]="{'text-primary': isRoute('tvshow')}" routerLink="/tvshows" class="header-button" translate>header.tvshows</a>
-                <a [ngClass]="{'text-primary': isRoute('music')}" routerLink="/musics" class="header-button" translate>header.musics</a>
-            </div>        
-            <div class="flex items-center justify-items-center space-x-8">        
-                <app-searchbar></app-searchbar>
-    
-                <button (click)="openPlayer()" [ngClass]="{'text-primary': application.showPlayer}" class="hidden sm:block header-button text-xl"><fa-icon [icon]="['fas', 'play-circle']" class="toggle-player"></fa-icon></button>
-    
-                <a (click)="openRemote()" class="header-button text-xl"><fa-icon [icon]="['fas', 'mobile-alt']"></fa-icon></a>
-                <a [ngClass]="{'text-primary': isRoute('settings')}" routerLink="/settings" class="header-button text-xl"><fa-icon [icon]="['fas', 'cog']"></fa-icon></a>
+<div class="hidden sm:block fixed w-screen top-0 z-30">
+    <div class="bg-one-dark-menu border-b border-one-dark-hover">
+        <div class="grid grid-cols-[auto_minmax(0,1fr)_auto] h-14 relative w-11/12 m-auto items-center">
+            <div class="flex items-center space-x-6 h-full text-base font-semibold justify-self-start">
+                <a [ngClass]="{'text-primary': isRoute('movie')}" routerLink="/movies" class="header-button hover:opacity-100 px-2 py-1 rounded hover:bg-one-dark-hover hover:text-primary transition-colors duration-200">MOVIES</a>
+                <a [ngClass]="{'text-primary': isRoute('tvshow')}" routerLink="/tvshows" class="header-button hover:opacity-100 px-2 py-1 rounded hover:bg-one-dark-hover hover:text-primary transition-colors duration-200">TV</a>
+            </div>
+
+            <div class="justify-self-center w-full max-w-4xl px-4">
+                <app-searchbar class="block w-full"></app-searchbar>
+            </div>
+
+            <div class="flex items-center justify-end space-x-6 justify-self-end">
+                <button (click)="openPlayer()" [ngClass]="{'text-primary': application.showPlayer}" class="hidden sm:block header-button text-lg"><fa-icon [icon]="['fas', 'play-circle']" class="toggle-player"></fa-icon></button>
+                <a (click)="openRemote()" class="header-button text-lg"><fa-icon [icon]="['fas', 'mobile-alt']"></fa-icon></a>
+                <a [ngClass]="{'text-primary': isRoute('settings')}" routerLink="/settings" class="header-button text-lg"><fa-icon [icon]="['fas', 'cog']"></fa-icon></a>
             </div>
         </div>
     </div>
     
-    <div class="h-1 bg-gradient-to-b from-gray-900 to-transparent w-full"></div>
-</div>
-
-
-
-<div class="sm:hidden w-full fixed z-40">
-    <div class="px-2 py-2 bg-dark-gray">
-        <app-searchbar  class=""></app-searchbar>
-    </div>
-    <div class="h-1 bg-gradient-to-b from-gray-900 to-transparent w-full"></div>
-</div>
-
-<div class="h-20"></div>
-
+    <app-movies-menu [items]="menuItems" [searchPageButton]="false" *ngIf="showMenu"></app-movies-menu>
     
-<app-player @modalAnimationReverse *ngIf="application.showPlayer" class="z-40 fixed bottom-0 left-0 w-screen h-screen sm:left-auto sm:bottom-auto sm:h-auto sm:w-full sm:right-4 sm:top-14 sm:mt-1"></app-player> 
+    <div *ngIf="application.showPlayer" @openClose class="bg-dark-gray border-b border-one-dark-hover">
+        <app-player class="block w-full"></app-player>
+    </div>
+</div>
 
+<div class="sm:hidden fixed w-screen top-0 z-40 bg-one-dark-menu border-b border-one-dark-hover">
+    <div class="px-2 py-2">
+        <div class="max-w-2xl mx-auto">
+            <app-searchbar class="block w-full"></app-searchbar>
+        </div>
+    </div>
+    <app-movies-menu [items]="menuItems" [searchPageButton]="false" *ngIf="showMenu"></app-movies-menu>
+    <div *ngIf="application.showPlayer" @openClose class="bg-dark-gray">
+        <app-player class="block w-full"></app-player>
+    </div>
+</div>
 
-<div class="sm:hidden w-full bg-dark-gray bottom-0 fixed z-30">
-    <div class="flex items-center text-xl py-4 px-2">
+<div class="h-14 sm:h-14" id="header-spacer"></div>
+<div *ngIf="showMenu" class="h-10 sm:h-10"></div>
+<div *ngIf="application.showPlayer" class="player-height-spacer"></div>
+
+<div class="sm:hidden w-full bg-one-dark-menu bottom-0 fixed z-30 border-t border-one-dark-hover">
+    <div class="flex items-center text-xl py-3 px-2">
         <div class="w-full text-center z-10">
             <fa-icon [ngClass]="{'text-primary': isRoute('movie')}" routerLink="/movies" class="header-button" [icon]="['fas', 'film']"></fa-icon>
         </div>
@@ -44,17 +50,14 @@
             <fa-icon [ngClass]="{'text-primary': isRoute('tvshow')}" routerLink="/tvshows" class="header-button" [icon]="['fas', 'tv']"></fa-icon>
         </div>
         <div class="w-full">
-            <div class="w-full absolute text-center left-0 bottom-4">
-                <div *ngIf="!player.isAvailable()" (click)="openRemote()" class="rounded-full h-14 w-14 m-auto flex items-center justify-center text-gray-500 hover:text-dark-full bg-white hover:bg-gray-200 transition-colors duration-300 cursor-pointer ">
+            <div class="w-full absolute text-center left-0 bottom-3">
+                <div *ngIf="!player.isAvailable()" (click)="openRemote()" class="rounded-full h-12 w-12 m-auto flex items-center justify-center text-gray-500 hover:text-one-dark-menu bg-white hover:bg-primary transition-colors duration-200 cursor-pointer ">
                     <fa-icon [icon]="['fas', 'mobile-alt']"></fa-icon>
                 </div>
-                <div *ngIf="player.isAvailable()" (click)="openPlayer()" class="rounded-full h-14 w-14 m-auto flex items-center justify-center text-gray-500 hover:text-dark-full bg-white hover:bg-gray-200 transition-colors duration-300 cursor-pointer ">
+                <div *ngIf="player.isAvailable()" (click)="openPlayer()" class="rounded-full h-12 w-12 m-auto flex items-center justify-center text-gray-500 hover:text-one-dark-menu bg-white hover:bg-primary transition-colors duration-200 cursor-pointer ">
                     <fa-icon [icon]="['fas', 'play-circle']" class="toggle-player"></fa-icon>
                 </div>
             </div>
-        </div>
-        <div class="w-full text-center z-10">
-            <fa-icon [ngClass]="{'text-primary': isRoute('music')}" routerLink="/musics" class="header-button" [icon]="['fas', 'music']"></fa-icon>
         </div>
 
         <button class="w-full text-center z-10 group relative">     

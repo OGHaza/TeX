@@ -4,6 +4,7 @@ import { AudioDetailsSong } from 'src/app/models/kodiInterfaces/audio';
 import { VideoDetailsMovie, VideoDetailsTVShow } from 'src/app/models/kodiInterfaces/video';
 import { KodiApiService } from 'src/app/services/kodi-api.service';
 import { SearchService } from 'src/app/services/search.service';
+import { searchMenuItem } from 'src/app/models/searchMenu';
 
 
 @Component({
@@ -20,6 +21,14 @@ import { SearchService } from 'src/app/services/search.service';
 export class SearchComponent implements OnInit {
 
   showFilterBox = false;
+
+  itemMenu:searchMenuItem[] = [
+    {
+      title: "library.genres",
+      icon: "theater-masks",
+      page : "genres"
+    },
+  ]
 
   constructor(public searchService: SearchService) { }
 
@@ -45,10 +54,18 @@ export class SearchComponent implements OnInit {
     }
   }
 
+  hasActiveFilters(): boolean {
+    return this.searchService.directorsFilter.length > 0 ||
+           this.searchService.writersFilter.length > 0 ||
+           this.searchService.actorsFilter.length > 0 ||
+           this.searchService.yearsFilter.length > 0 ||
+           this.searchService.genresFilter.length > 0 ||
+           this.searchService.collectionsFilter.length > 0;
+  }
+
   @HostListener('window:resize', ['$event'])
   onResize(event:Event) {
     this.getFilterBoxVisibility()
   }
-  
 
 }

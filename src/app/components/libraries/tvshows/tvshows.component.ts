@@ -48,15 +48,5 @@ export class TvshowsComponent implements OnInit {
       icon: "theater-masks",
       page : "genres"
     },
-    {
-      title: "library.actors",
-      icon: "users",
-      page : "actors"
-    },
-    {
-      title: "library.years",
-      icon: "calendar-alt",
-      page : "years"
-    },
   ]
 }

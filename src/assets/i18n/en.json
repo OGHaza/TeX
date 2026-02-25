@@ -163,7 +163,12 @@
             "restart" : "Restart Kodi"
         },
         "appearance" : {
-            "appearance" : "Appearance"
+            "appearance" : "Appearance",
+            "stickyMenu" : "Sticky genre bar",
+            "carousels" : "Carousels",
+            "continueWatching" : "Continue to watch",
+            "recentlyAdded" : "Recently Added",
+            "unwatched" : "Unwatched"
         },
         "advanced" : {
             "advanced" : "Advanced",

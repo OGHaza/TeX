@@ -1,10 +1,8 @@
-import { Component, ElementRef, HostListener, OnInit } from '@angular/core';
-import { modalAnimation, openCloseAnimation } from 'src/app/models/appAnimation';
-import { ListItemAll } from 'src/app/models/kodiInterfaces/listItem';
+import { Component, OnInit } from '@angular/core';
+import { openCloseAnimation } from 'src/app/models/appAnimation';
 import { GlobalTime } from 'src/app/models/kodiInterfaces/others';
 import { kodiTimeToString } from 'src/app/models/utils';
 import { ApplicationService } from 'src/app/services/application.service';
-import { KodiApiService } from 'src/app/services/kodi-api.service';
 import { PlayerService } from 'src/app/services/player.service';
 
 @Component({
@@ -19,23 +17,19 @@ export class PlayerComponent implements OnInit {
 
   showPlaylist = false;
 
-  constructor(private elementRef: ElementRef, public player: PlayerService, public application: ApplicationService, private kodiApi:KodiApiService) { }
+  constructor(public player: PlayerService, public application: ApplicationService) { }
 
   ngOnInit(): void {
-    this.application.toggleBodyScroll(false);
-    this.application.historyPush("player");
     this.player.loadPlayer()
   }
 
-  ngOnDestroy(): void {
-    this.application.showPlayer = false;  
-    this.application.toggleBodyScroll(true);
+  close(){
+    this.showPlaylist = false;
+    this.application.showPlayer = false;
   }
 
-  close(){
-    if(this.application.showPlayer)
-      this.application.toggleBodyScroll(true);
-    this.application.showPlayer = false;  
+  onImageError(event: Event) {
+    (event.target as HTMLImageElement).style.display = 'none';
   }
 
   toggleDisplayPlaylist(){
@@ -43,9 +37,6 @@ export class PlayerComponent implements OnInit {
 
     if(this.showPlaylist){
       this.loadPlaylist();
-      this.application.historyPush("playlist");
-    } else {
-      this.application.historyBack();
     }
   }
 
@@ -53,14 +44,6 @@ export class PlayerComponent implements OnInit {
     this.player.currentPlayer?.loadPlaylist();  
   }
 
-  @HostListener('window:popstate', ['$event'])
-  onPopState(event:Event) {
-    if(history.state.desc == "player"){
-      this.showPlaylist = false;
-    } else {
-      this.close();
-    } 
-  }
 
   getSongDuration(duration: GlobalTime | undefined, displayHours = true) : string {
     if(!duration) return "";

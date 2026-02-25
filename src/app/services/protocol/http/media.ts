@@ -116,6 +116,19 @@ export class MediaRequest extends HttpRequestData {
 
     return this.makeGetRequest(req);
   }
+
+  getRecentlyAddedEpisodes(parameter : GetLibraryParameters): Observable<ResponseWithLimits>{
+    
+    const params = {
+      "properties": episodeProperties,
+      ...parameter.limit ? {"limits" : parameter.limit} : undefined,
+      ...parameter.sort ? { "sort" : parameter.sort } : undefined
+    }
+
+    const req = this.getRequestUrl("getrecentlyaddedepisodes", "VideoLibrary.GetRecentlyAddedEpisodes", params)
+
+    return this.makeGetRequest(req);
+  }
   
   
   getTvShowDetail(tvshowId: number): Observable<VideoDetailsTVShow>{

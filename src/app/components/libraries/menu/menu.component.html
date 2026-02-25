@@ -1,13 +1,27 @@
-<div #scrollElement class="flex overflow-auto scrollbar-hide space-x-4 mt-2 sm:mt-0" (mousedown)="mouseDown = true; treeshold = 10" (mousemove)="onMouseMove($event)">
+<div [class.sm:sticky]="stickyMenu" [ngStyle]="{'top': stickyTop}" class="z-50 bg-one-dark-menu border-b border-one-dark-hover">
+    <div class="w-11/12 m-auto">
+        <div #scrollElement class="flex overflow-auto sm:overflow-visible scrollbar-hide space-x-1 py-1 justify-start sm:justify-center" (mousedown)="mouseDown = true; treeshold = 10" (mousemove)="onMouseMove($event)">
+            <ng-container *ngFor="let item of items">
+                <a *ngIf="item.page !== 'genres'"
+                   [ngClass]="isPage(item.page) ? 'text-primary bg-one-dark-hover' : ''"
+                   (click)="navigate(item.page)"
+                   class="button-library-section whitespace-nowrap">
+                    <p class="text-sm font-semibold" [translate]="item.title"></p>
+                </a>
 
+                <!-- Replace Genres with quick-search buttons -->
+                <ng-container *ngIf="item.page === 'genres'">
+                    <button *ngFor="let g of genreQuickFilters"
+                            (click)="openGenreSearch(g.value); $event.stopPropagation()"
+                            class="button-library-section whitespace-nowrap">
+                        <p class="text-sm font-semibold">{{ g.label }}</p>
+                    </button>
+                </ng-container>
+            </ng-container>
 
-    <a  *ngFor="let item of items" [ngClass]="{'text-primary':isPage(item.page)}" (click)="navigate(item.page)" class="button-library-section">
-        <fa-icon [icon]="['fas', item.icon]" class="sm:text-xl"></fa-icon>
-        <p class="text-lg font-semibold" [translate]="item.title"></p>
-    </a>
-
-    <a *ngIf="searchPageButton" routerLink="/search" class="button-library-section">
-        <fa-icon [icon]="['fas', 'search']" class="sm:text-xl"></fa-icon>
-        <p class="text-lg font-semibold" translate="header.search.search"></p>
-    </a>
+            <a *ngIf="searchPageButton" routerLink="/search" class="button-library-section whitespace-nowrap">
+                <p class="text-sm font-semibold" translate="header.search.search"></p>
+            </a>
+        </div>
+    </div>
 </div>

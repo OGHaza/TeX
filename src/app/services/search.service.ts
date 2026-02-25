@@ -49,8 +49,43 @@ export class SearchService {
     this.loadData()
    }
 
+  /**
+   * Used when the user starts a new *text* search from the header searchbar.
+   *
+   * We intentionally reset previous search scope (Movies/TV toggles) and any filter selections
+   * (like a previously-clicked quick genre such as "Action") so typing doesn't unexpectedly
+   * reuse an old search session.
+   *
+   * If we're already on /search, we keep the user's current selection.
+   */
+  openSearchPageFromTyping(){
+    const isOnSearch = this.router.url === "/search";
+    if(!isOnSearch){
+      this.resetNonTextFiltersAndScope();
+    }
+    this.openSearchPage();
+  }
+
+  private resetNonTextFiltersAndScope(){
+    this.directorsFilter = []
+    this.writersFilter = []
+    this.actorsFilter = []
+    this.yearsFilter = []
+    this.genresFilter = []
+    this.collectionsFilter = []
+
+    this.showFilterMenu = "";
+    this.searchFilterField = ""
+
+    // Default to searching across both scopes when starting a new text search.
+    this.searchMovies = true
+    this.searchTvShows = true
+  }
+
   openSearchPage(){
-    if( (this.backUrl == "" && this.router.url != "/search") || (this.router.url != "/search" && this.textSearch != "")){
+    // Always allow opening /search from another page.
+    // Update backUrl every time so returning goes to the right place.
+    if(this.router.url != "/search"){
       this.backUrl = this.router.url;
       this.router.navigateByUrl("/search");
     }

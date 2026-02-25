@@ -1,2 +1,46 @@
 <h3 class="settings-title" translate="settings.appearance.appearance"></h3>
+
+<div class="settings-section">
+    <div class="settings-subsection">
+        <p translate="settings.appearance.stickyMenu"></p>
+        <app-switch [value]="stickyMenu" (toggle)="toggleStickyMenu($event)"></app-switch>
+    </div>
+</div>
+
+<h4 class="text-lg font-semibold pt-4 pb-2 text-gray-300" translate="settings.appearance.moviesCarousels"></h4>
+
+<div class="settings-section">
+    <div class="settings-subsection">
+        <p translate="settings.appearance.continueWatching"></p>
+        <app-switch [value]="showContinueWatchingMovies" (toggle)="toggleContinueWatchingMovies($event)"></app-switch>
+    </div>
     
+    <div class="settings-subsection">
+        <p translate="settings.appearance.recentlyAdded"></p>
+        <app-switch [value]="showRecentlyAdded" (toggle)="toggleRecentlyAdded($event)"></app-switch>
+    </div>
+    
+    <div class="settings-subsection">
+        <p translate="settings.appearance.unwatched"></p>
+        <app-switch [value]="showUnwatched" (toggle)="toggleUnwatched($event)"></app-switch>
+    </div>
+</div>
+
+<h4 class="text-lg font-semibold pt-4 pb-2 text-gray-300" translate="settings.appearance.tvCarousels"></h4>
+
+<div class="settings-section">
+    <div class="settings-subsection">
+        <p translate="settings.appearance.continueWatching"></p>
+        <app-switch [value]="showContinueWatchingTV" (toggle)="toggleContinueWatchingTV($event)"></app-switch>
+    </div>
+    
+    <div class="settings-subsection">
+        <p translate="settings.appearance.recentlyAdded"></p>
+        <app-switch [value]="showRecentlyAddedTV" (toggle)="toggleRecentlyAddedTV($event)"></app-switch>
+    </div>
+    
+    <div class="settings-subsection">
+        <p translate="settings.appearance.unwatched"></p>
+        <app-switch [value]="showUnwatchedTV" (toggle)="toggleUnwatchedTV($event)"></app-switch>
+    </div>
+</div>

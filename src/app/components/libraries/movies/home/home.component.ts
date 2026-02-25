@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { fastFadeAnimation, openCloseAnimation } from 'src/app/models/appAnimation';
 import { Filter, FilterOperatorList } from 'src/app/models/filter';
 import { ListFilterFieldsMovies } from 'src/app/models/kodiInterfaces/listFilter';
@@ -6,6 +6,7 @@ import { ListSort, ListSortMethod, ListSortOrder } from 'src/app/models/kodiInte
 import { ListLimits } from 'src/app/models/kodiInterfaces/others';
 import { VideoDetailsMovie } from 'src/app/models/kodiInterfaces/video';
 import { KodiApiService } from 'src/app/services/kodi-api.service';
+import { LocalStorageService, STORAGE_KEYS } from 'src/app/services/local-storage.service';
 
 @Component({
   selector: 'app-movies-home',
@@ -18,13 +19,13 @@ import { KodiApiService } from 'src/app/services/kodi-api.service';
 })
 export class MoviesHomeComponent implements OnInit {
 
-  indexMovies = 0;
   maxMoviesPerPage:number = 50;
   moviesCount = 0;
   currentPage = 0;
-  pageMovies:number[] = [];
 
   isLoadingMovies = true;
+  isLoadingMore = false;
+  hasMoreMovies = true;
 
   inProgressMovies: VideoDetailsMovie[] = [];
   recentlyAddedMovies: VideoDetailsMovie[] = [];
@@ -35,7 +36,14 @@ export class MoviesHomeComponent implements OnInit {
   sortby: Map<string, ListSort> = new Map;
   currentSort: ListSort;
 
-  constructor(private kodiApi:KodiApiService) {
+  showContinueWatching: boolean = true;
+  showRecentlyAdded: boolean = true;
+  showUnwatched: boolean = true;
+
+  constructor(
+    private kodiApi: KodiApiService,
+    private localStorage: LocalStorageService
+  ) {
     this.currentSort = {ignorearticle: true,  method: ListSortMethod.title, order: ListSortOrder.ascending};
 
     this.sortby.set("alphabetical", this.currentSort);
@@ -44,14 +52,33 @@ export class MoviesHomeComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    this.getInProgressMovies();
-    this.getRecentlyAddedMovies();
-    this.getUnwatchedMovies();
+    this.showContinueWatching = this.localStorage.getData(STORAGE_KEYS.showContinueWatchingMovies) !== false;
+    this.showRecentlyAdded = this.localStorage.getData(STORAGE_KEYS.showRecentlyAdded) !== false;
+    this.showUnwatched = this.localStorage.getData(STORAGE_KEYS.showUnwatched) !== false;
+    
+    if (this.showContinueWatching) this.getInProgressMovies();
+    if (this.showRecentlyAdded) this.getRecentlyAddedMovies();
+    if (this.showUnwatched) this.getUnwatchedMovies();
     this.getMovies();
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onScroll() {
+    if (this.isLoadingMore || !this.hasMoreMovies) return;
+    
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const scrollThreshold = document.documentElement.scrollHeight - 400;
+    
+    if (scrollPosition >= scrollThreshold) {
+      this.loadMoreMovies();
+    }
   }
 
   changeSort(sort: ListSort){
     this.currentSort = sort;
+    this.currentPage = 0;
+    this.movies = [];
+    this.hasMoreMovies = true;
     this.getMovies(); 
   }
 
@@ -123,35 +150,31 @@ export class MoviesHomeComponent implements OnInit {
     this.kodiApi.media.getMovies({limit:limitReq, sort: this.currentSort}).subscribe((resp) => {
       if(resp?.movies){
         this.movies = resp.movies;
-        this.indexMovies = resp.limits.start;
         this.moviesCount = resp.limits.total;
-        this.pageMovies = [];
-        for(let x = 0;x<this.moviesCount / this.maxMoviesPerPage;x++){
-          this.pageMovies.push(x);
-        }
-        this.pageMovies.reverse();
+        this.hasMoreMovies = this.movies.length < this.moviesCount;
         this.isLoadingMovies = false;
       }  
     });
   }
 
-  incrementPage(){
-    if(this.currentPage<this.pageMovies.length-1){
-      this.currentPage++;
-      this.getMovies();
-    }
-  }
+  loadMoreMovies() {
+    if (this.isLoadingMore || !this.hasMoreMovies) return;
+    
+    this.isLoadingMore = true;
+    this.currentPage++;
+    
+    const limitReq: ListLimits = {
+      start: this.currentPage * this.maxMoviesPerPage,
+      end: this.currentPage * this.maxMoviesPerPage + this.maxMoviesPerPage
+    };
 
-  decrementPage(){
-    if(this.currentPage > 0){
-      this.currentPage--;
-      this.getMovies();
-    }     
-  }
-
-  setPage(page: number){
-    this.currentPage = page;
-    this.getMovies();
+    this.kodiApi.media.getMovies({limit: limitReq, sort: this.currentSort}).subscribe((resp) => {
+      if (resp?.movies) {
+        this.movies = [...this.movies, ...resp.movies];
+        this.hasMoreMovies = this.movies.length < this.moviesCount;
+      }
+      this.isLoadingMore = false;
+    });
   }
 
 }
