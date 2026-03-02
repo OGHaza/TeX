@@ -4,6 +4,7 @@ import { searchMenuItem } from 'src/app/models/searchMenu';
 import { FilterList, SearchService } from 'src/app/services/search.service';
 import { ApplicationService } from 'src/app/services/application.service';
 import { LocalStorageService, STORAGE_KEYS } from 'src/app/services/local-storage.service';
+import { KodiApiService } from 'src/app/services/kodi-api.service';
 
 type GenreQuickFilter = {
   label: string;
@@ -21,7 +22,8 @@ export class MoviesMenuComponent implements OnInit {
     private router: Router, 
     private searchService: SearchService,
     public application: ApplicationService,
-    private localStorage: LocalStorageService
+    private localStorage: LocalStorageService,
+    private kodiApi: KodiApiService
   ) { }
 
   @Input() items: searchMenuItem[] = [];
@@ -29,21 +31,34 @@ export class MoviesMenuComponent implements OnInit {
 
   stickyMenu: boolean = true;
 
-  readonly genreQuickFilters: GenreQuickFilter[] = [
-    { label: 'Action', value: 'Action' },
-    { label: 'Animation', value: 'Animation' },
-    { label: 'Comedy', value: 'Comedy' },
-    { label: 'Crime', value: 'Crime' },
-    { label: 'Documentary', value: 'Documentary' },
-    { label: 'Drama', value: 'Drama' },
-    { label: 'Horror', value: 'Horror' },
-    { label: 'Romance', value: 'Romance' },
-    { label: 'Sci-Fi', value: 'Science Fiction' },
-    { label: 'Thriller', value: 'Thriller' },
-  ];
+  genreQuickFilters: GenreQuickFilter[] = [];
+  enabledGenreBarGenres: Set<string> = new Set();
 
   ngOnInit(): void {
-    this.stickyMenu = this.localStorage.getData(STORAGE_KEYS.stickyMenu) !== false;
+    this.loadGenres();
+  }
+
+  loadGenres() {
+    const stored = this.localStorage.getData(STORAGE_KEYS.genreBarGenres);
+    if (stored) {
+      this.enabledGenreBarGenres = new Set(stored);
+    }
+
+    this.kodiApi.media.getVideoLibraryGenres({ type: 'movie' }).subscribe((resp) => {
+      if (resp?.genres) {
+        let genres = resp.genres.map(g => ({
+          label: g.title,
+          value: g.title
+        }));
+        
+        if (this.enabledGenreBarGenres.size === 0) {
+          this.enabledGenreBarGenres = new Set(genres.map(g => g.value));
+          this.localStorage.setData(STORAGE_KEYS.genreBarGenres, Array.from(this.enabledGenreBarGenres));
+        }
+        
+        this.genreQuickFilters = genres.filter(g => this.enabledGenreBarGenres.has(g.value));
+      }
+    });
   }
 
   get stickyTop(): string {
@@ -66,7 +81,6 @@ export class MoviesMenuComponent implements OnInit {
   }
 
   private getBaseRouteForSearchScope(): string {
-    // If we are already on /search, use backUrl (where we came from) to infer scope.
     if (this.router.url === '/search' && this.searchService.backUrl) {
       return this.searchService.backUrl.split('/')[1] ?? '';
     }
@@ -79,8 +93,6 @@ export class MoviesMenuComponent implements OnInit {
     this.searchService.showFilterMenu = '';
     this.searchService.getArrayFilterFromFilter(FilterList.Genres).push(genre);
 
-    // Keep the current Movies/TV selection if we're already on /search.
-    // Otherwise scope the search based on the current section.
     const isOnSearch = this.router.url === '/search';
     if(!isOnSearch){
       const baseRoute = this.getBaseRouteForSearchScope();
@@ -92,7 +104,6 @@ export class MoviesMenuComponent implements OnInit {
         this.searchService.searchTvShows = true;
       }
     } else {
-      // If user has disabled both, fall back to where they came from.
       if(!this.searchService.searchMovies && !this.searchService.searchTvShows){
         const baseRoute = this.getBaseRouteForSearchScope();
         if(baseRoute === 'movies'){

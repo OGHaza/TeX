@@ -106,11 +106,11 @@ export class KodiwebsocketService {
   }
 
   public registerPlayerHandlers(player:PlayerService){
-    this.socketHandlerIn.set(SocketInOnResume.method, new SocketInOnResume(player))
+    this.socketHandlerIn.set(SocketInOnResume.method, new SocketInOnResume(player, this.application))
     this.socketHandlerIn.set(SocketInOnPause.method, new SocketInOnPause(player))
     this.socketHandlerIn.set(SocketInOnSeek.method, new SocketInOnSeek(player))
     this.socketHandlerIn.set(SocketInOnStop.method, new SocketInOnStop(player))
-    this.socketHandlerIn.set(SocketInOnAVStart.method, new SocketInOnAVStart(player))
+    this.socketHandlerIn.set(SocketInOnAVStart.method, new SocketInOnAVStart(player, this.application))
   }
 
   public sendRequest(socketOutId: string, params:any) {    

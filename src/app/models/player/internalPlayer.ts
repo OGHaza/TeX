@@ -1,6 +1,7 @@
 import { Subscription } from "rxjs";
 import { KodiApiService } from "src/app/services/kodi-api.service";
 import { PlayerService } from "src/app/services/player.service";
+import { ApplicationService } from "src/app/services/application.service";
 import { AudioDetailsSong } from "../kodiInterfaces/audio";
 import { ListItemAll } from "../kodiInterfaces/listItem";
 import { GlobalTime } from "../kodiInterfaces/others";
@@ -25,7 +26,7 @@ export class InternalPlayer implements ControlPlayer {
 
     audio = new Audio();
 
-    constructor(private kodiApi: KodiApiService, private player: PlayerService){
+    constructor(private kodiApi: KodiApiService, private player: PlayerService, private application: ApplicationService){
         this.title = "library.musicsView.internalPlayer";
 
         this.properties = {
@@ -122,6 +123,9 @@ export class InternalPlayer implements ControlPlayer {
             this.player.setDefaultPlayer()
             this.player.currentPlayer = this;
         }
+        
+        // Expand player when starting to play
+        this.application.showPlayer = true;
         
 
         if(this.playlistItems[this.itemIndex].file){

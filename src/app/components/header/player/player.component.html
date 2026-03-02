@@ -10,13 +10,13 @@
 
 
 <!-- Player -->
-<div @openClose *ngIf="!showPlaylist" class="player-box z-40 relative">
+<div @openClose *ngIf="!showPlaylist" class="player-box z-40 relative pl-[4rem] pr-[3.5rem]">
 
     <!-- Poster thumbnail -->
     <img *ngIf="player.currentPlayer?.playerIllustration" 
          [src]="player.currentPlayer?.playerIllustration" 
          (error)="onImageError($event)"
-         class="absolute left-2 sm:left-8 top-1/2 -translate-y-1/2 w-12 sm:w-16 h-16 sm:h-24 object-cover rounded shadow-lg opacity-80 mr-2">
+         class="absolute left-[6rem] top-1/2 -translate-y-1/2 w-12 sm:w-16 h-16 sm:h-24 object-cover rounded shadow-lg opacity-80 mr-2">
 
     <div *ngIf="player.players.length > 1" class="w-full px-3 sm:px-10 pl-20 sm:pl-28">
         <button class="custom-button group relative flex mx-auto my-2 text-sm">

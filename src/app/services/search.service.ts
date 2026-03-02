@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { VideoDetailsMovie, VideoDetailsTVShow } from '../models/kodiInterfaces/video';
 import { KodiApiService } from './kodi-api.service';
+import { ListSort, ListSortMethod, ListSortOrder } from '../models/kodiInterfaces/listItem';
 
 export enum FilterList {
   Collections = "Collections",
@@ -45,7 +46,19 @@ export class SearchService {
   searchMovies = true
   searchTvShows = true
 
+  sortby: Map<string, ListSort> = new Map;
+  currentSort: ListSort;
+  randomSeed: number = Math.random();
+
   constructor(private kodiApi: KodiApiService, private router:Router) {
+    this.currentSort = {ignorearticle: true, method: ListSortMethod.dateadded, order: ListSortOrder.descending};
+
+    this.sortby.set("alphabetical", {ignorearticle: true, method: ListSortMethod.title, order: ListSortOrder.ascending});
+    this.sortby.set("alphabeticalInversed", {ignorearticle: true, method: ListSortMethod.title, order: ListSortOrder.descending});
+    this.sortby.set("random", {ignorearticle: true, method: ListSortMethod.random});
+    this.sortby.set("dateadded", {ignorearticle: true, method: ListSortMethod.dateadded, order: ListSortOrder.descending});
+    this.sortby.set("dateaddedInversed", {ignorearticle: true, method: ListSortMethod.dateadded, order: ListSortOrder.ascending});
+    
     this.loadData()
    }
 
@@ -138,6 +151,13 @@ export class SearchService {
 
   toggleSearchTVShows(value: boolean){
     this.searchTvShows = value
+  }
+
+  changeSort(sort: ListSort){
+    this.currentSort = sort;
+    if (sort.method === ListSortMethod.random) {
+      this.randomSeed = Math.random();
+    }
   }
 
 
@@ -317,7 +337,7 @@ export class SearchService {
   }
 
   loadMovies(){
-    this.kodiApi.media.getMovies({ properties: ["director", "year", "art", "title", "resume", "set", "rating", "genre", "writer", "cast"] }).subscribe(resp => {
+    this.kodiApi.media.getMovies({ properties: ["director", "year", "art", "title", "resume", "set", "rating", "genre", "writer", "cast", "dateadded"] }).subscribe(resp => {
       if(resp?.movies){
         this.movies = resp.movies
       }
@@ -325,7 +345,7 @@ export class SearchService {
   }
 
   getMovies(){
-    return this.movies.filter(e => 
+    let filtered = this.movies.filter(e => 
       ((this.containsAll(e.director ?? [], this.directorsFilter) && (e.director ?? []).length > 0) && this.directorsFilter.length > 0
       || (this.containsAll(e.writer ?? [], this.writersFilter) && (e.writer ?? []).length > 0) && this.writersFilter.length > 0
       || (this.containsAll(e.cast.map(cast => cast.name) ?? [], this.actorsFilter) && (e.cast ?? []).length > 0) && this.actorsFilter.length > 0
@@ -334,10 +354,50 @@ export class SearchService {
       || (this.yearsFilter.indexOf(e.year?.toString() ?? "") > -1)  && this.yearsFilter.length > 0)
       || ((e.title!.toLocaleLowerCase().indexOf(this.textSearch.toLocaleLowerCase() ?? "") > -1 && this.textSearch.length > 0))
       )
+
+    return this.sortMovies(filtered);
+  }
+
+  private sortMovies(movies: VideoDetailsMovie[]): VideoDetailsMovie[] {
+    return [...movies].sort((a, b) => this.compare(a, b));
+  }
+
+  private sortTvShows(tvShows: VideoDetailsTVShow[]): VideoDetailsTVShow[] {
+    return [...tvShows].sort((a, b) => this.compare(a, b));
+  }
+
+  private compare(a: any, b: any): number {
+    switch (this.currentSort.method) {
+      case ListSortMethod.title:
+        const titleA = a.title.toLowerCase();
+        const titleB = b.title.toLowerCase();
+        return this.currentSort.order === ListSortOrder.ascending ? titleA.localeCompare(titleB) : titleB.localeCompare(titleA);
+      case ListSortMethod.dateadded:
+        const dateA = new Date(a.dateadded ?? 0);
+        const dateB = new Date(b.dateadded ?? 0);
+        return this.currentSort.order === ListSortOrder.ascending ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
+      case ListSortMethod.random:
+        // Use random seed for consistent sorting
+        const hashA = this.hashCode(a.title + a.year);
+        const hashB = this.hashCode(b.title + b.year);
+        return ((hashA * this.randomSeed) % 1) - ((hashB * this.randomSeed) % 1);
+      default:
+        return 0;
+    }
+  }
+
+  private hashCode(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
   }
 
   loadTvShows(){
-    this.kodiApi.media.getTvShows({ properties: ["year", "art", "title", "genre", "cast"] }).subscribe(resp => {
+    this.kodiApi.media.getTvShows({ properties: ["year", "art", "title", "genre", "cast", "dateadded"] }).subscribe(resp => {
       if(resp?.tvshows){
         this.tvShows = resp.tvshows
       }
@@ -345,11 +405,13 @@ export class SearchService {
   }
 
   getTvShows(){
-    return this.tvShows.filter(e => 
+    let filtered = this.tvShows.filter(e => 
       (this.containsAll(e.genre ?? [], this.genresFilter) && (e.genre ?? []).length > 0) && this.genresFilter.length > 0
       || (this.yearsFilter.indexOf(e.year?.toString() ?? "") > -1)  && this.yearsFilter.length > 0
       || ((e.title!.toLocaleLowerCase().indexOf(this.textSearch.toLocaleLowerCase() ?? "") > -1 && this.textSearch.length > 0))
       )
+
+    return this.sortTvShows(filtered);
   }
 
 }

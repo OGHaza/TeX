@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { fastFadeAnimation, openCloseAnimation } from 'src/app/models/appAnimation';
 import { Filter, FilterOperatorList } from 'src/app/models/filter';
 import { ListFilterFieldsMovies } from 'src/app/models/kodiInterfaces/listFilter';
@@ -7,6 +7,13 @@ import { ListLimits } from 'src/app/models/kodiInterfaces/others';
 import { VideoDetailsMovie } from 'src/app/models/kodiInterfaces/video';
 import { KodiApiService } from 'src/app/services/kodi-api.service';
 import { LocalStorageService, STORAGE_KEYS } from 'src/app/services/local-storage.service';
+
+type GenreCarousel = {
+  name: string;
+  movies: VideoDetailsMovie[];
+  loaded: boolean;
+  visible: boolean;
+};
 
 @Component({
   selector: 'app-movies-home',
@@ -17,7 +24,7 @@ import { LocalStorageService, STORAGE_KEYS } from 'src/app/services/local-storag
     fastFadeAnimation
   ],
 })
-export class MoviesHomeComponent implements OnInit {
+export class MoviesHomeComponent implements OnInit, AfterViewInit {
 
   maxMoviesPerPage:number = 50;
   moviesCount = 0;
@@ -31,6 +38,9 @@ export class MoviesHomeComponent implements OnInit {
   recentlyAddedMovies: VideoDetailsMovie[] = [];
   unwatchedMovies: VideoDetailsMovie[] = [];
 
+  genreCarousels: GenreCarousel[] = [];
+  enabledGenres: Set<string> = new Set();
+
   movies: VideoDetailsMovie[] = [];
 
   sortby: Map<string, ListSort> = new Map;
@@ -39,27 +49,172 @@ export class MoviesHomeComponent implements OnInit {
   showContinueWatching: boolean = true;
   showRecentlyAdded: boolean = true;
   showUnwatched: boolean = true;
+  showGenreCarousels: boolean = true;
+  sortByRecentlyAdded: boolean = true;
 
-  constructor(
-    private kodiApi: KodiApiService,
-    private localStorage: LocalStorageService
-  ) {
-    this.currentSort = {ignorearticle: true,  method: ListSortMethod.title, order: ListSortOrder.ascending};
+  private observer: IntersectionObserver | null = null;
+
+    constructor(
+     private kodiApi: KodiApiService,
+     private localStorage: LocalStorageService
+   ) {
+     this.currentSort = {ignorearticle: true,  method: ListSortMethod.dateadded, order: ListSortOrder.descending};
 
     this.sortby.set("alphabetical", this.currentSort);
     this.sortby.set("alphabeticalInversed", {ignorearticle: true,  method: ListSortMethod.title, order: ListSortOrder.descending});
     this.sortby.set("random", {ignorearticle: true,  method: ListSortMethod.random});
+    this.sortby.set("dateadded", {ignorearticle: true,  method: ListSortMethod.dateadded, order: ListSortOrder.descending});
+    this.sortby.set("dateaddedInversed", {ignorearticle: true,  method: ListSortMethod.dateadded, order: ListSortOrder.ascending});
    }
 
   ngOnInit(): void {
     this.showContinueWatching = this.localStorage.getData(STORAGE_KEYS.showContinueWatchingMovies) !== false;
     this.showRecentlyAdded = this.localStorage.getData(STORAGE_KEYS.showRecentlyAdded) !== false;
     this.showUnwatched = this.localStorage.getData(STORAGE_KEYS.showUnwatched) !== false;
+    this.showGenreCarousels = this.localStorage.getData(STORAGE_KEYS.showGenreCarousels) !== false;
+    this.sortByRecentlyAdded = this.localStorage.getData(STORAGE_KEYS.genreCarouselSort) !== 'random';
+    
+    this.loadEnabledGenres();
     
     if (this.showContinueWatching) this.getInProgressMovies();
     if (this.showRecentlyAdded) this.getRecentlyAddedMovies();
     if (this.showUnwatched) this.getUnwatchedMovies();
+    
+    if (this.showGenreCarousels) {
+      this.loadGenres();
+    }
+    
     this.getMovies();
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => this.setupIntersectionObserver(), 500);
+  }
+
+  setupIntersectionObserver() {
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const genreName = entry.target.getAttribute('data-genre');
+          if (genreName) {
+            const carousel = this.genreCarousels.find(c => c.name === genreName);
+            if (carousel && !carousel.loaded) {
+              carousel.visible = true;
+              this.loadGenreMovies(carousel);
+            }
+          }
+        }
+      });
+    }, { rootMargin: '200px' });
+
+    setTimeout(() => {
+      document.querySelectorAll('[data-genre]').forEach(el => {
+        this.observer?.observe(el);
+      });
+    }, 1000);
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    document.querySelectorAll('[data-genre]').forEach(el => {
+      if (!el.hasAttribute('data-observed')) {
+        el.setAttribute('data-observed', 'true');
+        this.observer?.observe(el);
+      }
+    });
+  }
+
+  loadEnabledGenres() {
+    const stored = this.localStorage.getData(STORAGE_KEYS.enabledGenres);
+    if (stored) {
+      this.enabledGenres = new Set(stored);
+    }
+  }
+
+  saveEnabledGenres() {
+    this.localStorage.setData(STORAGE_KEYS.enabledGenres, Array.from(this.enabledGenres));
+  }
+
+  toggleGenre(genre: string, enabled: boolean) {
+    if (enabled) {
+      this.enabledGenres.add(genre);
+    } else {
+      this.enabledGenres.delete(genre);
+    }
+    this.saveEnabledGenres();
+    
+    const carousel = this.genreCarousels.find(g => g.name === genre);
+    if (carousel && !carousel.loaded && enabled) {
+      this.loadGenreMovies(carousel);
+    }
+  }
+
+  isGenreEnabled(genre: string): boolean {
+    return this.enabledGenres.has(genre);
+  }
+
+  private shuffleArray<T>(array: T[]): T[] {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  loadGenres() {
+    this.kodiApi.media.getVideoLibraryGenres({ type: 'movie' }).subscribe((resp) => {
+      if (resp?.genres) {
+        let carousels = resp.genres.map(genre => ({
+          name: genre.title,
+          movies: [],
+          loaded: false,
+          visible: false
+        }));
+        
+        carousels = this.shuffleArray(carousels);
+        
+        this.genreCarousels = carousels;
+        
+        for (const carousel of this.genreCarousels) {
+          if (this.enabledGenres.has(carousel.name) || this.enabledGenres.size === 0) {
+            if (this.enabledGenres.size === 0) {
+              this.enabledGenres.add(carousel.name);
+            }
+            this.loadGenreMovies(carousel);
+          }
+        }
+        this.saveEnabledGenres();
+      }
+    });
+  }
+
+  loadGenreMovies(carousel: GenreCarousel) {
+    if (carousel.loaded) return;
+    
+    const limitReq: ListLimits = { start: 0, end: 20 };
+    const filter: Filter = {
+      field: ListFilterFieldsMovies.genre,
+      operator: FilterOperatorList.contains,
+      value: carousel.name
+    };
+    
+    const sort: ListSort = this.sortByRecentlyAdded 
+      ? { ignorearticle: true, method: ListSortMethod.dateadded, order: ListSortOrder.descending }
+      : { ignorearticle: true, method: ListSortMethod.random };
+
+    this.kodiApi.media.getMovies({ limit: limitReq, filter: filter, sort: sort }).subscribe((resp) => {
+      if (resp?.movies && resp.movies.length > 0) {
+        carousel.movies = resp.movies;
+        carousel.loaded = true;
+      } else {
+        carousel.movies = [];
+        carousel.loaded = true;
+      }
+    });
+  }
+
+  getVisibleGenreCarousels(): GenreCarousel[] {
+    return this.genreCarousels.filter(c => c.movies.length > 0 && this.enabledGenres.has(c.name));
   }
 
   @HostListener('window:scroll', ['$event'])
@@ -83,12 +238,7 @@ export class MoviesHomeComponent implements OnInit {
   }
 
   getInProgressMovies(){
-
-    const limitReq: ListLimits = {
-      start: 0,
-      end : 20
-    }
-
+    const limitReq: ListLimits = { start: 0, end: 20 };
     const progressFilter: Filter = {
       field: ListFilterFieldsMovies.inprogress,
       operator: FilterOperatorList.true,
@@ -102,12 +252,7 @@ export class MoviesHomeComponent implements OnInit {
   }
 
   getRecentlyAddedMovies(){  
-
-    const limitReq: ListLimits = {
-      start: 0,
-      end : 20
-    }
-
+    const limitReq: ListLimits = { start: 0, end: 20 };
     this.kodiApi.media.getRecentlyAddedMovies({limit:limitReq}).subscribe((resp) => {
       if(resp?.movies)
         this.recentlyAddedMovies = resp.movies;
@@ -115,19 +260,13 @@ export class MoviesHomeComponent implements OnInit {
   }
 
   getUnwatchedMovies(){
-
-    const limitReq: ListLimits = {
-      start: 0,
-      end : 20
-    }
-
+    const limitReq: ListLimits = { start: 0, end: 20 };
     const filter: Filter = {
       field: ListFilterFieldsMovies.playcount,
       operator: FilterOperatorList.is,
       value: "0"
     } 
-
-    const ratingSort:ListSort = {
+    const ratingSort: ListSort = {
       ignorearticle: true,  
       method: ListSortMethod.rating, 
       order: ListSortOrder.descending

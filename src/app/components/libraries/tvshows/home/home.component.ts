@@ -42,11 +42,13 @@ export class TvShowsHomeComponent implements OnInit {
     private kodiApi: KodiApiService,
     private localStorage: LocalStorageService
   ) {
-    this.currentSort = {ignorearticle: true,  method: ListSortMethod.title, order: ListSortOrder.ascending};
+    this.currentSort = {ignorearticle: true,  method: ListSortMethod.dateadded, order: ListSortOrder.descending};
 
     this.sortby.set("alphabetical", this.currentSort);
     this.sortby.set("alphabeticalInversed", {ignorearticle: true,  method: ListSortMethod.title, order: ListSortOrder.descending});
     this.sortby.set("random", {ignorearticle: true,  method: ListSortMethod.random});
+    this.sortby.set("dateadded", {ignorearticle: true,  method: ListSortMethod.dateadded, order: ListSortOrder.descending});
+    this.sortby.set("dateaddedInversed", {ignorearticle: true,  method: ListSortMethod.dateadded, order: ListSortOrder.ascending});
    }
 
   ngOnInit(): void {

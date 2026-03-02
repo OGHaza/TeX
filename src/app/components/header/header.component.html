@@ -2,8 +2,9 @@
     <div class="bg-one-dark-menu border-b border-one-dark-hover">
         <div class="grid grid-cols-[auto_minmax(0,1fr)_auto] h-14 relative w-11/12 m-auto items-center">
             <div class="flex items-center space-x-6 h-full text-base font-semibold justify-self-start">
-                <a [ngClass]="{'text-primary': isRoute('movie')}" routerLink="/movies" class="header-button hover:opacity-100 px-2 py-1 rounded hover:bg-one-dark-hover hover:text-primary transition-colors duration-200">MOVIES</a>
-                <a [ngClass]="{'text-primary': isRoute('tvshow')}" routerLink="/tvshows" class="header-button hover:opacity-100 px-2 py-1 rounded hover:bg-one-dark-hover hover:text-primary transition-colors duration-200">TV</a>
+                <a *ngIf="showMoviesSection" [ngClass]="{'text-primary': isRoute('movie')}" routerLink="/movies" class="header-button hover:opacity-100 px-2 py-1 rounded hover:bg-one-dark-hover hover:text-primary transition-colors duration-200">MOVIES</a>
+                <a *ngIf="showTVSection" [ngClass]="{'text-primary': isRoute('tvshow')}" routerLink="/tvshows" class="header-button hover:opacity-100 px-2 py-1 rounded hover:bg-one-dark-hover hover:text-primary transition-colors duration-200">TV</a>
+                <a *ngIf="showMusicSection" [ngClass]="{'text-primary': isRoute('music')}" routerLink="/musics" class="header-button hover:opacity-100 px-2 py-1 rounded hover:bg-one-dark-hover hover:text-primary transition-colors duration-200">MUSIC</a>
             </div>
 
             <div class="justify-self-center w-full max-w-4xl px-4">
@@ -43,12 +44,16 @@
 
 <div class="sm:hidden w-full bg-one-dark-menu bottom-0 fixed z-30 border-t border-one-dark-hover">
     <div class="flex items-center text-xl py-3 px-2">
-        <div class="w-full text-center z-10">
+        <div *ngIf="showMoviesSection" class="w-full text-center z-10">
             <fa-icon [ngClass]="{'text-primary': isRoute('movie')}" routerLink="/movies" class="header-button" [icon]="['fas', 'film']"></fa-icon>
         </div>
-        <div class="w-full text-center z-10">
+        <div *ngIf="showTVSection" class="w-full text-center z-10">
             <fa-icon [ngClass]="{'text-primary': isRoute('tvshow')}" routerLink="/tvshows" class="header-button" [icon]="['fas', 'tv']"></fa-icon>
         </div>
+        <div *ngIf="showMusicSection" class="w-full text-center z-10">
+            <fa-icon [ngClass]="{'text-primary': isRoute('music')}" routerLink="/musics" class="header-button" [icon]="['fas', 'music']"></fa-icon>
+        </div>
+
         <div class="w-full">
             <div class="w-full absolute text-center left-0 bottom-3">
                 <div *ngIf="!player.isAvailable()" (click)="openRemote()" class="rounded-full h-12 w-12 m-auto flex items-center justify-center text-gray-500 hover:text-one-dark-menu bg-white hover:bg-primary transition-colors duration-200 cursor-pointer ">

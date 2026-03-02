@@ -1,35 +1,47 @@
-<!-- In Progress -->
-<app-library-row-medias @openClose *ngIf="showContinueWatching && inProgressMovies.length > 0" [title]="'library.continueToWatch'" [medias]="inProgressMovies"></app-library-row-medias>
+<!-- Content Body -->
+<div class="w-full mt-4">
+    
+    <!-- In Progress -->
+    <app-library-row-medias @openClose *ngIf="showContinueWatching && inProgressMovies.length > 0" [title]="'library.continueToWatch'" [medias]="inProgressMovies"></app-library-row-medias>
 
-<!-- Recently added -->
-<app-library-row-medias @openClose *ngIf="showRecentlyAdded && recentlyAddedMovies.length > 0" [title]="'library.recentlyAdded'" [medias]="recentlyAddedMovies"></app-library-row-medias>
- 
+    <!-- Recently added -->
+    <app-library-row-medias @openClose *ngIf="showRecentlyAdded && recentlyAddedMovies.length > 0" [title]="'library.recentlyAdded'" [medias]="recentlyAddedMovies"></app-library-row-medias>
+    
 
-<!-- Unwatched -->
-<app-library-row-medias @openClose *ngIf="showUnwatched && unwatchedMovies.length > 0" [title]="'library.unwatched'" [medias]="unwatchedMovies"></app-library-row-medias>
- 
-
-<!-- All Movies -->
-<div @openClose *ngIf="movies.length > 0" class="mt-4 mb-4">
-    <div class="flex justify-between items-center mb-2">
-        <h3 class="text-lg font-semibold" translate="library.movies"></h3>
-        <div class="relative z-20">
-            <button class="text-sm text-gray-400 hover:text-white group relative whitespace-nowrap">     
-                {{ 'library.sortBy.sortBy' | translate}}<fa-icon [icon]="['fas', 'sort']" class="ml-2"></fa-icon>
-                <div class="floating-button-bottom-right pointer-group-button">
-                    <div class="floating-list">
-                        <button (click)="changeSort(sort.value)" [ngClass]="{'floating-button-active': currentSort == sort.value}"  *ngFor="let sort of sortby | keyvalue" class="floating-button" translate="">
-                            library.sortBy.{{ sort.key }}
-                        </button>          
-                    </div>
-                </div>   
-            </button>
+    <!-- Unwatched -->
+    <app-library-row-medias @openClose *ngIf="showUnwatched && unwatchedMovies.length > 0" [title]="'library.unwatched'" [medias]="unwatchedMovies"></app-library-row-medias>
+    
+    <!-- Genre Carousels (Dynamic) -->
+    <ng-container *ngIf="showGenreCarousels">
+        <div class="mt-4" *ngFor="let carousel of genreCarousels" [attr.data-genre]="carousel.name">
+            <app-library-row-medias *ngIf="isGenreEnabled(carousel.name)" [title]="carousel.name" [medias]="carousel.movies"></app-library-row-medias>
         </div>
-    </div>
-    <div *ngIf="!isLoadingMovies" @fastFadeAnimation class="flex flex-wrap justify-center">
-        <app-mediacard *ngFor="let movie of movies" class="w-32 sm:w-40" [media]="movie"></app-mediacard>
-    </div>
-    <div *ngIf="isLoadingMore" class="flex justify-center py-4">
-        <fa-icon [icon]="['fas', 'circle-notch']" [spin]="true" class="text-primary text-2xl"></fa-icon>
+    </ng-container>
+
+
+    <!-- All Movies -->
+    <div @openClose *ngIf="movies.length > 0" class="mt-8 mb-4 pt-4 border-t border-gray-700">
+        <div class="flex flex-wrap pl-10 sm:pl-14">
+            <h3 class="text-lg font-semibold w-32 sm:w-40 pl-2 py-1" translate="library.allMovies"></h3>
+            <div class="flex-1"></div>
+            <div class="relative z-20" style="width: 8rem;">
+                <button class="text-sm text-gray-400 hover:text-white group relative whitespace-nowrap text-right">     
+                    {{ 'library.sortBy.sortBy' | translate}}<fa-icon [icon]="['fas', 'sort']" class="ml-2"></fa-icon>
+                    <div class="floating-button-bottom-right pointer-group-button">
+                        <div class="floating-list">
+                            <button (click)="changeSort(sort.value)" [ngClass]="{'floating-button-active': currentSort == sort.value}"  *ngFor="let sort of sortby | keyvalue" class="floating-button" translate="">
+                                library.sortBy.{{ sort.key }}
+                            </button>          
+                        </div>
+                    </div>   
+                </button>
+            </div>
+        </div>
+        <div *ngIf="!isLoadingMovies" @fastFadeAnimation class="flex flex-wrap justify-center px-2 sm:px-4">
+            <app-mediacard *ngFor="let movie of movies" class="w-32 sm:w-40 flex-shrink-0" [media]="movie"></app-mediacard>
+        </div>
+        <div *ngIf="isLoadingMore" class="flex justify-center py-4">
+            <fa-icon [icon]="['fas', 'circle-notch']" [spin]="true" class="text-primary text-2xl"></fa-icon>
+        </div>
     </div>
 </div>

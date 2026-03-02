@@ -12,10 +12,10 @@
 
         <div *ngIf="getFilterBoxVisibility()" @heightAnimation class="w-full bg-dark-gray border-b border-one-dark-hover py-3">
 
-            <!-- Single row: Scope toggles | Filter buttons | Reset -->
-            <div class="flex items-center gap-4 flex-wrap">
+            <!-- Single row: Scope toggles | Filter buttons -->
+            <div class="flex items-center justify-center gap-4 flex-wrap">
                 <!-- Scope toggles -->
-                <div class="flex items-center gap-4 ml-3 sm:ml-10">
+                <div class="flex items-center gap-4">
                     <div class="flex items-center gap-2">
                         <p class="text-sm" translate="header.movies"></p>
                         <app-switch [value]="searchService.searchMovies" (toggle)="searchService.toggleSearchMovies($event)"></app-switch>
@@ -27,10 +27,10 @@
                 </div>
 
                 <!-- Separator -->
-                <div class="hidden md:block self-stretch border-l border-gray-700 h-6"></div>
+                <div class="hidden md:block self-stretch border-l border-gray-700"></div>
 
                 <!-- Filter groups -->
-                <div class="flex flex-wrap gap-2 flex-1">
+                <div class="flex flex-wrap gap-2 justify-center">
                     <ng-container *ngFor="let filter of searchService.FilterList | keyvalue">
                         <div *ngIf="filter.value != 'Writers' && filter.value != 'Years'" class="relative" (mouseleave)="searchService.showFilterMenu = ''">
                             <button (click)="searchService.showFilterValues(filter.value)" class="text-sm px-3 py-1.5 rounded bg-dark-full hover:bg-one-dark-hover transition-colors">
@@ -53,18 +53,13 @@
                         </div>
                     </ng-container>
                 </div>
-
-                <!-- Reset button -->
-                <button (click)="searchService.clearFilters()" class="text-xs text-gray-400 hover:text-primary transition-colors mr-3 sm:mr-10">
-                    <span translate="library.resetFilters"></span>
-                </button>
             </div>
 
         </div>
     </div>
 
     <!-- Selected filters row -->
-    <div *ngIf="hasActiveFilters()" class="flex flex-wrap items-center gap-2 mt-4 px-3 sm:px-10">
+    <div *ngIf="hasActiveFilters()" class="flex flex-wrap items-center gap-2 mt-4 px-9 sm:px-14">
         <ng-container *ngFor="let filter of searchService.FilterList | keyvalue">
             <ng-container *ngIf="filter.value != 'Writers' && filter.value != 'Years'">
                 <button *ngFor="let value of searchService.getArrayFilterFromFilter(filter.value)" (click)="searchService.changeFilterValue(filter.value, value)" class="text-xs px-2 py-1 rounded bg-primary/20 text-primary hover:bg-primary/30 transition-colors flex items-center gap-1">
@@ -74,20 +69,35 @@
         </ng-container>
     </div>
 
-    <!-- Results -->
-    <div @openClose class="w-full mt-2 px-3 sm:px-10">
+    <!-- Sort menu and Results -->
+    <div @openClose class="w-full mt-2">
+        <div class="flex flex-wrap pl-10 sm:pl-14">
+            <div class="flex-1"></div>
+            <div class="relative z-20" style="width: 8rem;">
+                <button class="text-sm text-gray-400 hover:text-white group relative whitespace-nowrap text-right">     
+                    {{ 'library.sortBy.sortBy' | translate}}<fa-icon [icon]="['fas', 'sort']" class="ml-2"></fa-icon>
+                    <div class="floating-button-bottom-right pointer-group-button">
+                        <div class="floating-list">
+                            <button (click)="searchService.changeSort(sort.value)" [ngClass]="{'floating-button-active': searchService.currentSort == sort.value}"  *ngFor="let sort of searchService.sortby | keyvalue" class="floating-button" translate="">
+                                library.sortBy.{{ sort.key }}
+                            </button>          
+                        </div>
+                    </div>   
+                </button>
+            </div>
+        </div>
 
-        <div *ngIf="searchService.getMovies().length > 0 && searchService.searchMovies" class="mb-4">
-            <h3 *ngIf="searchService.searchMovies && searchService.searchTvShows" class="text-lg font-semibold py-2" translate="header.movies"></h3>
-            <div class="flex flex-wrap justify-center">
-                <app-mediacard *ngFor="let movie of searchService.getMovies()" class="w-32 sm:w-40" [media]="movie"></app-mediacard>
+         <div *ngIf="searchService.getMovies().length > 0 && searchService.searchMovies" class="mb-4">
+            <h3 *ngIf="searchService.searchMovies && searchService.searchTvShows" class="text-lg font-semibold py-2 pl-10 sm:pl-14" translate="header.movies"></h3>
+            <div class="flex flex-wrap justify-center px-2 sm:px-4">
+                <app-mediacard *ngFor="let movie of searchService.getMovies()" class="w-32 sm:w-40 flex-shrink-0" [media]="movie"></app-mediacard>
             </div>
         </div>
 
         <div *ngIf="searchService.getTvShows().length > 0 && searchService.searchTvShows" class="mb-4">
-            <h3 *ngIf="searchService.searchMovies && searchService.searchTvShows" class="text-lg font-semibold py-2" translate="header.tvshows"></h3>
-            <div class="flex flex-wrap justify-center">
-                <app-mediacard *ngFor="let movie of searchService.getTvShows()" class="w-32 sm:w-40" [media]="movie"></app-mediacard>
+            <h3 *ngIf="searchService.searchMovies && searchService.searchTvShows" class="text-lg font-semibold py-2 pl-10 sm:pl-14" translate="header.tvshows"></h3>
+            <div class="flex flex-wrap justify-center px-2 sm:px-4">
+                <app-mediacard *ngFor="let movie of searchService.getTvShows()" class="w-32 sm:w-40 flex-shrink-0" [media]="movie"></app-mediacard>
             </div>
         </div>
 

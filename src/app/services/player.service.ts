@@ -13,7 +13,7 @@ export class PlayerService {
 
   players: ControlPlayer[] = [];
   currentPlayer: ControlPlayer | undefined;
-  internalPlayer: InternalPlayer = new InternalPlayer(this.kodiApi, this);
+  internalPlayer: InternalPlayer = new InternalPlayer(this.kodiApi, this, this.application);
 
   useInternal: boolean = true;
 
@@ -38,6 +38,11 @@ export class PlayerService {
         customPlayer.loadPlayer();     
       })
       this.setPlayer(this.players[0]);
+      
+      // If there are active players, expand the player on page load
+      if(players.length > 0){
+        this.application.showPlayer = true;
+      }
     });
   }
 

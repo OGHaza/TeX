@@ -4,6 +4,7 @@ import { modalAnimation, modalAnimationReverse, openCloseAnimation } from 'src/a
 import { ApplicationService } from 'src/app/services/application.service';
 import { PlayerService } from 'src/app/services/player.service';
 import { searchMenuItem } from 'src/app/models/searchMenu';
+import { LocalStorageService, STORAGE_KEYS } from 'src/app/services/local-storage.service';
 
 @Component({
   selector: 'app-header',
@@ -16,7 +17,12 @@ import { searchMenuItem } from 'src/app/models/searchMenu';
   ]
 })
 export class HeaderComponent implements OnInit {
-  constructor(public application:ApplicationService, public player: PlayerService, public router:Router) { }
+  constructor(
+    public application:ApplicationService, 
+    public player: PlayerService, 
+    public router:Router,
+    private localStorage: LocalStorageService
+  ) { }
 
   showMenu: boolean = false;
   
@@ -28,9 +34,17 @@ export class HeaderComponent implements OnInit {
     },
   ];
 
+  showMoviesSection: boolean = true;
+  showTVSection: boolean = true;
+  showMusicSection: boolean = true;
+
   ngOnInit(): void {
     this.router.url.indexOf("movie") != -1;
     this.updateShowMenu();
+    
+    this.showMoviesSection = this.localStorage.getData(STORAGE_KEYS.showMoviesSection) !== false;
+    this.showTVSection = this.localStorage.getData(STORAGE_KEYS.showTVSection) !== false;
+    this.showMusicSection = this.localStorage.getData(STORAGE_KEYS.showMusicSection) !== false;
     
     this.router.events.subscribe(() => {
       this.updateShowMenu();

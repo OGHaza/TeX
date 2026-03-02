@@ -1,10 +1,11 @@
-<div class="mb-2">
+<div class="mb-2 relative">
     <div *ngIf="title != ''">
-        <h3 class="text-lg font-semibold py-1" translate="{{ title }}"></h3>
+        <h3 class="text-lg font-semibold py-1 pl-16 sm:pl-16" translate="{{ title }}"></h3>
     </div>
     <div #scrollElement class="flex mx-auto overflow-auto scrollbar-hide items-center" (mousedown)="mouseDown = true; treeshold = 10" (mousemove)="onMouseMove($event)">
-        <div class="w-8 sm:w-12 h-36 sm:h-[216px] flex-shrink-0 bg-gradient-to-r from-transparent to-slate-700/40 rounded-l-lg" style="margin-right: 0.5rem;"></div>
+        <div class="w-8 sm:w-12 h-36 sm:h-[216px] flex-shrink-0 bg-gray-600/30" style="margin-right: 0.5rem;"></div>
         <app-mediacard class="w-32 sm:w-40 flex-shrink-0" *ngFor="let movie of medias" [media]="movie" [isDisabled]="treeshold==0"></app-mediacard> 
-        <div class="w-8 sm:w-12 h-36 sm:h-[216px] flex-shrink-0 bg-gradient-to-l from-transparent to-slate-700/40 rounded-r-lg" style="margin-left: 0.5rem;"></div>
     </div>
+    <div class="absolute left-0 top-0 bottom-0 w-16 sm:w-16 bg-gradient-to-r from-dark-full to-transparent pointer-events-none"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-16 sm:w-16 bg-gradient-to-l from-dark-full to-transparent pointer-events-none"></div>
 </div>
