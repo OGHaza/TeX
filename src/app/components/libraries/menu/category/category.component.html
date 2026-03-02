@@ -1,10 +1,10 @@
 
-<div class="flex flex-col sm:flex-row justify-between mt-8 mb-4 sm:mb-0">
-    <h3 class="text-xl font-bold w-full ml-2">{{ title | translate }} ({{ contentsFilter.length }})</h3>
+<div class="flex flex-col sm:flex-row justify-between mt-6 mb-4 sm:mb-0">
+    <h3 class="text-lg font-semibold w-full">{{ title | translate }} ({{ contentsFilter.length }})</h3>
 
-    <div class="sm:px-2 relative w-full sm:w-80 mt-2 sm:mt-0">
-        <fa-icon [ngClass]="{'text-gray-200' : searchTextValue!='', 'text-gray-500' : searchTextValue==''}" class="flex items-center h-10 top-0 absolute left-3 sm:left-5 transition-colors duration-300" [icon]="['fas', 'search']"></fa-icon>
-        <input type="text" [(ngModel)]="searchTextValue" (ngModelChange)="modelChangeFn($event)" class="z-20 w-full h-10 bg-dark-full rounded-lg text-white border hover:border-gray-700 focus:border-gray-700 focus:ring-0 pl-9 pr-4 sm:pr-2 transition-all duration-300"  placeholder="{{ 'header.search.search' | translate}}">
+    <div class="relative w-full sm:w-80 mt-2 sm:mt-0">
+        <fa-icon [ngClass]="{'text-gray-200' : searchTextValue!='', 'text-gray-500' : searchTextValue==''}" class="flex items-center h-8 top-0 absolute left-3 transition-colors" [icon]="['fas', 'search']"></fa-icon>
+        <input type="text" [(ngModel)]="searchTextValue" (ngModelChange)="modelChangeFn($event)" class="w-full h-8 bg-dark-full rounded text-white text-sm border border-transparent hover:border-gray-700 focus:border-gray-700 focus:ring-0 pl-9 pr-3 transition-all"  placeholder="{{ 'header.search.search' | translate}}">
     </div>
     
 </div>
@@ -13,15 +13,13 @@
     <fa-icon [icon]="['fas', 'circle-notch']" [spin]="true" class="text-primary text-3xl"></fa-icon>
 </div>
 
-<div @fastFadeAnimation *ngIf="!isLoading" class="flex flex-wrap mx-auto justify-center mb-2 items-center">
-    <div *ngFor="let content of contentsToShow" class="w-1/3 sm:w-44">
-        <app-mediacard class="w-full" [media]="content"></app-mediacard>
-    </div>
+<div @fastFadeAnimation *ngIf="!isLoading" class="flex flex-wrap justify-center mb-4">
+    <app-mediacard *ngFor="let content of contentsToShow" class="w-32 sm:w-40" [media]="content"></app-mediacard>
 </div>
 
 <div *ngIf="contentsToShow.length < contentsFilter.length && !isLoading" class="text-center mb-4">
-    <button (click)="showMore()" title="show more" class="p-4 h-16 w-16 inline-flex items-center rounded-full opacity-80 hover:opacity-100 transition-opacity cursor-pointer bg-dark-gray">
-        <fa-icon [icon]="['fas', 'arrow-down']" class="fill-current w-full"></fa-icon>
+    <button (click)="showMore()" title="show more" class="p-3 h-12 w-12 inline-flex items-center rounded-full opacity-60 hover:opacity-100 transition-opacity cursor-pointer bg-dark-gray">
+        <fa-icon [icon]="['fas', 'arrow-down']" class="fill-current w-full text-sm"></fa-icon>
     </button>
 </div>
 

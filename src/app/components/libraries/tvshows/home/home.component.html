@@ -1,43 +1,34 @@
  <!-- In Progress -->
- <app-library-row-medias @openClose *ngIf="inProgressTVShows.length > 0" [title]="'library.continueToWatch'" [medias]="inProgressTVShows"></app-library-row-medias>
-   
+<app-library-row-medias @openClose *ngIf="showContinueWatching && inProgressTVShows.length > 0" [title]="'library.continueToWatch'" [medias]="inProgressTVShows"></app-library-row-medias>
 
- <!-- All TV Shows -->
- <div @openClose *ngIf="tvShows.length > 0" class="mb-4">
-     <div class="flex justify-between items-center mt-4 mb-2">
-         <h3 class="text-xl font-bold w-full" translate="library.tvshows"></h3>
-         <div>
-             <button class="w-full text-center z-10 group relative whitespace-nowrap">     
-                 {{ 'library.sortBy.sortBy' | translate}}<fa-icon [icon]="['fas', 'sort']" class="ml-2"></fa-icon>
-                 <div class="floating-button-bottom-right pointer-group-button">
-                     <div class="floating-list">
-                         <button (click)="changeSort(sort.value)" [ngClass]="{'floating-button-active': currentSort == sort.value}"  *ngFor="let sort of sortby | keyvalue" class="floating-button" translate="">
-                             library.sortBy.{{ sort.key }}
-                         </button>          
-                     </div>
-                 </div>   
-             </button>
-         </div>
-     </div>
-     <div *ngIf="!isLoadingTVShows" @fastFadeAnimation class="flex flex-wrap mx-auto justify-center items-center mb-4">
-         <div *ngFor="let tvShow of tvShows" class="w-1/3 sm:w-37">
-             <app-mediacard class="w-full" [media]="tvShow"></app-mediacard>
-         </div>
-     </div>
-     <div *ngIf="pageMovies.length > 1" class="flex justify-between sm:w-44 sm:ml-auto mt-4 mx-4">
-         <button (click)="decrementPage()"><fa-icon [icon]="['fas', 'arrow-left']" [ngClass]="{'text-gray-500' : currentPage == 0}"></fa-icon></button>
-         <button class="custom-button group relative">
-             {{ 'library.page' | translate}} {{ currentPage+1 }}
-             <div class="floating-button-top-left pointer-group-button min-w-full">
-                 <div class="floating-list floating-button-top">  
-                     <button (click)="setPage(page)" *ngFor="let page of pageMovies" class="floating-button">
-                         <p  class="text-sm">
-                             {{ 'library.page' | translate}} {{ page+1 }}
-                         </p>
-                     </button>
-                 </div>
-             </div>
-         </button>
-         <button (click)="incrementPage()"><fa-icon [icon]="['fas', 'arrow-right']" [ngClass]="{'text-gray-500' : currentPage == pageMovies.length-1}"></fa-icon></button>
-     </div>
- </div>
+<!-- Recently added -->
+<app-library-row-medias @openClose *ngIf="showRecentlyAdded && recentlyAddedTVShows.length > 0" [title]="'library.recentlyAdded'" [medias]="recentlyAddedTVShows"></app-library-row-medias>
+
+<!-- Unwatched -->
+<app-library-row-medias @openClose *ngIf="showUnwatched && unwatchedTVShows.length > 0" [title]="'library.unwatched'" [medias]="unwatchedTVShows"></app-library-row-medias>
+
+    <!-- All TV -->
+    <div @openClose *ngIf="tvShows.length > 0" class="mt-8 mb-4 pt-4 border-t border-gray-700">
+        <div class="flex flex-wrap pl-10 sm:pl-14">
+            <h3 class="text-lg font-semibold w-32 sm:w-40 pl-2 py-1" translate="library.allTV"></h3>
+        <div class="flex-1"></div>
+        <div class="relative z-50" style="width: 8rem;">
+            <button class="text-sm text-gray-400 hover:text-white group relative whitespace-nowrap text-right">     
+                {{ 'library.sortBy.sortBy' | translate}}<fa-icon [icon]="['fas', 'sort']" class="ml-2"></fa-icon>
+                <div class="floating-button-bottom-right pointer-group-button">
+                    <div class="floating-list">
+                        <button (click)="changeSort(sort.value)" [ngClass]="{'floating-button-active': currentSort == sort.value}"  *ngFor="let sort of sortby | keyvalue" class="floating-button" translate="">
+                            library.sortBy.{{ sort.key }}
+                        </button>          
+                    </div>
+                </div>   
+            </button>
+        </div>
+    </div>
+    <div *ngIf="!isLoadingTVShows" @fastFadeAnimation class="flex flex-wrap justify-center px-2 sm:px-4">
+        <app-mediacard *ngFor="let tvShow of tvShows" class="w-32 sm:w-40 flex-shrink-0" [media]="tvShow"></app-mediacard>
+    </div>
+    <div *ngIf="isLoadingMore" class="flex justify-center py-4">
+        <fa-icon [icon]="['fas', 'circle-notch']" [spin]="true" class="text-primary text-2xl"></fa-icon>
+    </div>
+</div>

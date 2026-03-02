@@ -21,34 +21,9 @@ export class MoviesComponent implements OnInit {
 
   itemMenu:searchMenuItem[] = [
     {
-      title: "Collections",
-      icon: "book",
-      page: "collections"
-    },
-    {
-      title: "library.directors",
-      icon: "users",
-      page : "directors"
-    },
-    {
-      title: "library.writers",
-      icon: "users",
-      page : "writers"
-    },
-    {
       title: "library.genres",
       icon: "theater-masks",
       page : "genres"
-    },
-    {
-      title: "library.actors",
-      icon: "users",
-      page : "actors"
-    },
-    {
-      title: "library.years",
-      icon: "calendar-alt",
-      page : "years"
     },
   ]
 
