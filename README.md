@@ -1,3 +1,13 @@
+# Fork of TeX
+
+#### Main screen w/ inline player expanded
+![alt text](https://github.com/OGHaza/TeX/blob/main/src/resources/main.jpg?raw=true)
+#### Search
+![alt text](https://github.com/OGHaza/TeX/blob/main/src/resources/search.jpg?raw=true)
+#### Some of the settings
+![alt text](https://github.com/OGHaza/TeX/blob/main/src/resources/settings.jpg?raw=true)
+
+
 # TeX - Web Interface for Kodi
 
 TeX is a new web interface for Kodi made with Angular and Tailwind CSS.
