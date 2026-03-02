@@ -21,6 +21,10 @@ export class RowMediaComponent implements OnInit {
 
   }
 
+  get isMobile(): boolean {
+    return window.innerWidth < 640;
+  }
+
   mouseDown: boolean = false;
   treeshold = 0;
   previousMouseX  = 0;
