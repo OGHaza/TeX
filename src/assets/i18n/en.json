@@ -28,16 +28,18 @@
         "changeFilterToFindSomething" : "Change filters to find something",
         "resetFilters" : "Reset",
 
-        "sortBy" : {
-            "sortBy" : "Sort by",
-            "alphabetical" : "Alphabetical",
-            "alphabeticalInversed" : "Alphabetical (inversed)",
-            "random" : "Random",
-            "duration" : "Duration",
-            "latest" : "Latest",
-            "older" : "Older",
-            "track" : "Track"
-        },
+         "sortBy" : {
+             "sortBy" : "Sort by",
+             "alphabetical" : "Alphabetical",
+             "alphabeticalInversed" : "Alphabetical (descending)",
+             "random" : "Random",
+             "dateadded" : "Date Added (newest)",
+             "dateaddedInversed" : "Date Added (oldest)",
+             "duration" : "Duration",
+             "latest" : "Latest",
+             "older" : "Older",
+             "track" : "Track"
+         },
         "page" : "Page",
         
         "directors" : "Directors",
@@ -54,6 +56,8 @@
         "mostPlayedAlbums" : "Most played albums",
 
         "allMusics" : "All music",
+        "allMovies" : "All Movies",
+        "allTV" : "All TV",
 
         "filters" : "Filters",
         
@@ -162,8 +166,14 @@
             "checkUpdates" : "Check for updates",
             "restart" : "Restart Kodi"
         },
-        "appearance" : {
-            "appearance" : "Appearance"
+         "appearance" : {
+            "appearance" : "Appearance",
+            "sectionVisibility" : "Section Visibility",
+            "moviesCarousels" : "Movies Carousels",
+            "tvCarousels" : "TV Shows Carousels",
+            "continueWatching" : "Continue to watch",
+            "recentlyAdded" : "Recently Added",
+            "unwatched" : "Unwatched"
         },
         "advanced" : {
             "advanced" : "Advanced",
