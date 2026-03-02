@@ -5,7 +5,20 @@ import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
 export enum STORAGE_KEYS {
   websocket_port = 'websocket_port',
   websocket_address = 'websocket_addr',
-  lastVersion = "last_version"
+  lastVersion = "last_version",
+  showContinueWatchingMovies = "showContinueWatchingMovies",
+  showRecentlyAdded = "showRecentlyAdded",
+  showUnwatched = "showUnwatched",
+  showContinueWatchingTV = "showContinueWatchingTV",
+  showRecentlyAddedTV = "showRecentlyAddedTV",
+  showUnwatchedTV = "showUnwatchedTV",
+  showGenreCarousels = "showGenreCarousels",
+  enabledGenres = "enabledGenres",
+  genreBarGenres = "genreBarGenres",
+  genreCarouselSort = "genreCarouselSort",
+  showMoviesSection = "showMoviesSection",
+  showTVSection = "showTVSection",
+  showMusicSection = "showMusicSection",
 }
 
 @Injectable({
