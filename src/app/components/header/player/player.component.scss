@@ -1,0 +1,58 @@
+.player-seekbar {
+  --seek-percent: 0%;
+  --seek-fill: #7cc7ff;
+  --seek-track: rgba(207, 214, 230, 0.12);
+  --seek-border: rgba(107, 114, 128, 0.5);
+
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  background: transparent;
+}
+
+/* WebKit */
+.player-seekbar::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 0;
+  border: 1px solid var(--seek-border);
+  background: linear-gradient(
+    to right,
+    var(--seek-fill) 0%,
+    var(--seek-fill) var(--seek-percent),
+    var(--seek-track) var(--seek-percent),
+    var(--seek-track) 100%
+  );
+}
+
+.player-seekbar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  margin-top: -4px;
+  border-radius: 0;
+  background: var(--seek-fill);
+  border: none;
+}
+
+/* Firefox */
+.player-seekbar::-moz-range-track {
+  height: 4px;
+  border-radius: 0;
+  border: 1px solid var(--seek-border);
+  background: var(--seek-track);
+}
+
+.player-seekbar::-moz-range-progress {
+  height: 4px;
+  border-radius: 0;
+  background: var(--seek-fill);
+}
+
+.player-seekbar::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border-radius: 0;
+  background: var(--seek-fill);
+  border: none;
+}

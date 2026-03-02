@@ -1,38 +1,34 @@
 
 
-<button (click)="goTo($event)" class="w-full {{ player.currentPlayer?.properties?.position == position ? 'bg-dark-full' : '' }} border-t-2 border-gray-500 flex py-2 sm:py-4 px-4 hover:bg-dark-full hover:bg-opacity-50 transition-all duration-300 cursor-pointer relative">
+<button (click)="goTo($event)" class="w-full {{ player.currentPlayer?.properties?.position == position ? 'bg-one-dark-hover' : '' }} border-t border-gray-700/50 flex items-center py-2 px-3 hover:bg-one-dark-hover/50 transition-colors cursor-pointer relative group">
     
-    <div *ngIf="item.type=='movie'" class="w-full flex items-center space-x-8">
-        <img src="{{imageUrl}}" class="w-20 rounded-lg" loading="lazy">
-        <div class="text-left w-full">
-            <p class="text-lg font-bold">{{ item.title }}</p>
-        </div>
-        <button (click)="removeItem()" class="text-white cursor-pointer pr-4 text-xl hover:text-red-500 p-2 remove-file"><fa-icon [icon]="['fas', 'times']" class="remove-file"></fa-icon></button>
+    <div *ngIf="item.type=='movie'" class="w-full flex items-center gap-3">
+        <img src="{{imageUrl}}" class="w-10 h-14 object-cover rounded" loading="lazy">
+        <p class="text-sm font-medium truncate flex-1">{{ item.title }}</p>
+        <button (click)="removeItem()" class="text-gray-500 hover:text-red-400 p-1 opacity-0 group-hover:opacity-100 transition-opacity"><fa-icon [icon]="['fas', 'times']" class="text-xs"></fa-icon></button>
     </div>
 
-    <div *ngIf="item.type=='episode'" class="w-full flex items-center space-x-8">
-        <img src="{{imageUrl}}" class="w-36 rounded-lg" loading="lazy">
-        <div class="text-left w-full">
-            <p class="text-lg font-bold">{{ item.showtitle }}</p>
-            <p class="text-gray-400">S{{ item.season }}E{{ item.episode }} : {{ item.title }}</p>
+    <div *ngIf="item.type=='episode'" class="w-full flex items-center gap-3">
+        <img src="{{imageUrl}}" class="w-16 h-9 object-cover rounded" loading="lazy">
+        <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">{{ item.showtitle }}</p>
+            <p class="text-xs text-gray-400 truncate">S{{ item.season }}E{{ item.episode }}: {{ item.title }}</p>
         </div>
-        <button (click)="removeItem()" class="text-white cursor-pointer pr-4 text-xl hover:text-red-500 p-2 remove-file"><fa-icon [icon]="['fas', 'times']" class="remove-file"></fa-icon></button>
+        <button (click)="removeItem()" class="text-gray-500 hover:text-red-400 p-1 opacity-0 group-hover:opacity-100 transition-opacity"><fa-icon [icon]="['fas', 'times']" class="text-xs"></fa-icon></button>
     </div>
 
-    <div *ngIf="item.type=='song'" class="w-full flex items-center space-x-8">
-        <img src="{{imageUrl}}" class="w-24 rounded-lg" loading="lazy">
-        <div class="text-left w-full">
-            <p class="text-lg font-semibold">{{ item.title }}</p>
-            <p class="text-gray-400 font-semibold">{{ item.artist }}</p>
+    <div *ngIf="item.type=='song'" class="w-full flex items-center gap-3">
+        <img src="{{imageUrl}}" class="w-10 h-10 object-cover rounded" loading="lazy">
+        <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">{{ item.title }}</p>
+            <p class="text-xs text-gray-400 truncate">{{ item.artist }}</p>
         </div>
-        <button (click)="removeItem()" class="text-white cursor-pointer pr-4 text-xl hover:text-red-500 p-2 remove-file"><fa-icon [icon]="['fas', 'times']" class="remove-file"></fa-icon></button>
+        <button (click)="removeItem()" class="text-gray-500 hover:text-red-400 p-1 opacity-0 group-hover:opacity-100 transition-opacity"><fa-icon [icon]="['fas', 'times']" class="text-xs"></fa-icon></button>
     </div>
 
-    <div *ngIf="item.type=='unknown'" class="w-full flex items-center space-x-8">
-        <div class="text-left w-full">
-            <p class="text-lg font-semibold">{{ item.file }}</p>
-        </div>
-        <button (click)="removeItem()" class="text-white cursor-pointer pr-4 text-xl hover:text-red-500 p-2 remove-file"><fa-icon [icon]="['fas', 'times']" class="remove-file"></fa-icon></button>
+    <div *ngIf="item.type=='unknown'" class="w-full flex items-center gap-3">
+        <p class="text-sm truncate flex-1">{{ item.file }}</p>
+        <button (click)="removeItem()" class="text-gray-500 hover:text-red-400 p-1 opacity-0 group-hover:opacity-100 transition-opacity"><fa-icon [icon]="['fas', 'times']" class="text-xs"></fa-icon></button>
     </div>
     
     

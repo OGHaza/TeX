@@ -1,145 +1,125 @@
 
 <!-- Playlist -->
-<div @openClose *ngIf="showPlaylist" class="sm:floating-container player-box z-40 sm:max-h-screen3/4">
-    <button  (click)="toggleDisplayPlaylist()" class="close-button bg-dark-full z-20 w-12"><fa-icon [icon]="['fas', 'times']"></fa-icon></button>
-    <p class="text-xl font-semibold mb-4" translate="">player.playlist</p>
-    <div class="w-full h-full overflow-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-400">
-        <app-playlist-item *ngFor="let item of player.currentPlayer?.playlistItems; let i = index" [item]="item" [position]="i" ></app-playlist-item>
+<div @openClose *ngIf="showPlaylist" class="player-box z-50 max-h-80 overflow-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-400">
+    <div class="flex items-center justify-between px-3 py-2 border-b border-gray-700/50">
+        <p class="text-sm font-semibold" translate="">player.playlist</p>
+        <button (click)="toggleDisplayPlaylist()" class="text-gray-400 hover:text-white p-1"><fa-icon [icon]="['fas', 'times']"></fa-icon></button>
     </div>
+    <app-playlist-item *ngFor="let item of player.currentPlayer?.playlistItems; let i = index" [item]="item" [position]="i" ></app-playlist-item>
 </div>
 
 
 <!-- Player -->
-<div @openClose *ngIf="!showPlaylist" class="sm:floating-container player-box z-30">
-    
-    <div *ngIf="player.players.length > 1" class="w-full">
-        <button class="custom-button group relative flex mx-auto mb-4">   
-            {{ player.currentPlayer?.title ?? "unknown" | translate }} 
-            <div class="floating-button-bottom-left m-auto pointer-group-button min-w-full">
-                <div class="floating-list">
-                    <div (click)="player.showPlayer(i)" class="floating-button" *ngFor="let pl of player.players; let i = index" >
+<div @openClose *ngIf="!showPlaylist" class="player-box z-40 relative pl-[4rem] pr-[3.5rem]">
+
+    <!-- Poster thumbnail -->
+    <img *ngIf="player.currentPlayer?.playerIllustration" 
+         [src]="player.currentPlayer?.playerIllustration" 
+         (error)="onImageError($event)"
+         class="absolute left-[6rem] top-1/2 -translate-y-1/2 w-12 sm:w-16 h-16 sm:h-24 object-cover rounded shadow-lg opacity-80 mr-2">
+
+    <div *ngIf="player.players.length > 1" class="w-full px-3 sm:px-10 pl-20 sm:pl-28">
+        <button class="custom-button group relative flex mx-auto my-2 text-sm">
+            {{ player.currentPlayer?.title ?? "unknown" | translate }}
+            <div class="floating-button-bottom-left m-auto pointer-group-button min-w-full z-60">
+                <div class="floating-list z-60">
+                    <div (click)="player.showPlayer(i)" class="floating-button z-60" *ngFor="let pl of player.players; let i = index" >
                         <label>{{ pl.title | translate}}</label>
-                    </div> 
+                    </div>
                 </div>
-            </div>      
+            </div>
         </button>
     </div>
-    <div class="flex flex-col h-full sm:h-auto sm:flex-row w-full">
-        <button  (click)="close()" class="sm:hidden close-button bg-dark-full z-20 w-12"><fa-icon [icon]="['fas', 'times']"></fa-icon></button>
 
-        <img class="rounded-lg max-h-58 sm:max-h-36 max-w-70 sm:max-w-33 m-auto" src="{{ player.currentPlayer?.playerIllustration }}" title="{{ player.currentPlayer?.playerItem?.title }}">
 
-        <div *ngIf="!player.currentPlayer?.playerItem" class="text-center sm:text-left px-4 w-full flex flex-col h-full justify-center">
-            <p translate="player.noMedia"></p>
-        </div>
-        <div *ngIf="player.currentPlayer?.playerItem" class="text-center sm:text-left px-4 w-full flex flex-col">
-            <!-- Movie info -->
-            <div *ngIf="player.currentPlayer?.playerItem?.type == 'movie'">
-                <p class="text-2xl sm:text-xl font-semibold">
-                    {{  player.currentPlayer?.playerItem?.title }}
-                </p>
-            </div>
-        
-            <!-- Episode info -->
-            <div *ngIf="player.currentPlayer?.playerItem?.type == 'episode'">
-                <p class="text-2xl sm:text-xl font-semibold">
-                    {{ player.currentPlayer?.playerItem?.showtitle }}
-                </p>
-                <p class="text-gray-400 text-lg sm:text-sm">
-                    S{{ player.currentPlayer?.playerItem?.season }}E{{ player.currentPlayer?.playerItem?.episode }} : {{ player.currentPlayer?.playerItem?.title }}
-                </p>
-            </div>
-        
-            <!-- Song info -->
-            <div *ngIf="player.currentPlayer?.playerItem?.type == 'song'">
-                <p class="text-2xl font-semibold">
-                    {{ player.currentPlayer?.playerItem?.title }}
-                </p>
-                <p class="text-gray-400 text-lg sm:text-sm">
-                    {{ player.currentPlayer?.playerItem?.artist }}
-                </p>
+    <div *ngIf="!player.currentPlayer?.playerItem" class="text-center w-full flex flex-col justify-center pl-20 sm:pl-28" style="height: 92px;">
+        <p class="text-sm text-gray-400" translate="player.noMedia"></p>
+    </div>
+
+    <div *ngIf="player.currentPlayer?.playerItem" class="w-full flex flex-col px-3 sm:px-10 pl-20 sm:pl-28">
+
+        <!-- Row 1 -->
+        <div class="w-full flex items-center justify-between py-1">
+            <!-- Transport controls -->
+            <div class="flex items-center gap-2 text-sm">
+                <button (click)="player.currentPlayer?.goBackward()" class="text-gray-400 hover:text-gray-200 active:text-primary transition-colors"><fa-icon [icon]="['fas', 'step-backward']"></fa-icon></button>
+                <button (click)="player.currentPlayer?.stop();close()" class="text-gray-400 hover:text-gray-200 active:text-primary transition-colors"><fa-icon [icon]="['fas', 'stop']"></fa-icon></button>
+                <button (click)="player.currentPlayer?.setFixedSeek(-15)" class="text-gray-400 hover:text-gray-200 active:text-primary transition-colors"><fa-icon [icon]="['fas', 'undo']"></fa-icon></button>
+                <button class="text-primary text-lg hover:opacity-80 active:opacity-100 transition-opacity" (click)="player.currentPlayer?.tooglePlayPause()" >
+                    <fa-icon [icon]="['fas', player.currentPlayer?.isPlaying() ? 'pause' : 'play']"></fa-icon>
+                </button>
+                <button (click)="player.currentPlayer?.setFixedSeek(15)" class="text-gray-400 hover:text-gray-200 active:text-primary transition-colors"><fa-icon [icon]="['fas', 'redo']"></fa-icon></button>
+                <button (click)="player.currentPlayer?.goForward()" class="text-gray-400 hover:text-gray-200 active:text-primary transition-colors"><fa-icon [icon]="['fas', 'step-forward']"></fa-icon></button>
             </div>
 
-            <!-- Language and Subtitles -->
-            <div *ngIf="player.currentPlayer?.playerItem?.type != 'song'" class="text-2xl sm:text-lg flex items-center h-full justify-evenly pt-8 sm:pt-0">
-
-                <button *ngIf="player.currentPlayer?.properties?.audiostreams?.length != 0" class="cursor-pointer text-gray-300 hover:text-gray-100 group relative">
+            <!-- Options: playlist, language, subtitles -->
+            <div class="flex items-center gap-2 text-sm">
+                <button (click)="toggleDisplayPlaylist()" class="text-gray-400 hover:text-gray-200 active:text-primary transition-colors"><fa-icon [icon]="['fas', 'list']"></fa-icon></button>
+                
+                <!-- Audio streams -->
+                <button *ngIf="player.currentPlayer?.playerItem?.type != 'song' && player.currentPlayer?.properties?.audiostreams?.length != 0" class="text-gray-400 hover:text-gray-200 active:text-primary transition-colors group relative">
                     <fa-icon [icon]="['fas', 'globe']"></fa-icon>
-                    <div class="floating-button-bottom-left pointer-group-button min-w-full">
-                        <div class="floating-list floating-button-top">
-                            <p class="whitespace-nowrap px-2 py-1 text-sm" translate="player.languages"></p>
-                            <p *ngFor="let audiostream of player.currentPlayer?.properties?.audiostreams" (click)="player.currentPlayer?.setAudioStream(audiostream)" class="floating-button {{ audiostream.index == player.currentPlayer?.properties?.currentaudiostream?.index ? 'text-white' : 'text-gray-500 hover:text-white' }}  text-sm">
+                    <div class="floating-button-bottom-right pointer-group-button min-w-full z-60">
+                        <div class="floating-list floating-button-top z-60">
+                            <p class="whitespace-nowrap px-2 py-1 text-xs z-60" translate="player.languages"></p>
+                            <p *ngFor="let audiostream of player.currentPlayer?.properties?.audiostreams" (click)="player.currentPlayer?.setAudioStream(audiostream)" class="floating-button z-60 {{ audiostream.index == player.currentPlayer?.properties?.currentaudiostream?.index ? 'text-white' : 'text-gray-500 hover:text-white' }}  text-xs">
                                 {{ audiostream.language != "" ? audiostream.language : "Unknown" }}
                             </p>
                         </div>
                     </div>
                 </button>
-                <button *ngIf="player.currentPlayer?.properties?.subtitles?.length != 0" class="cursor-pointer text-gray-300 hover:text-gray-100 group relative">
+
+                <!-- Subtitles -->
+                <button *ngIf="player.currentPlayer?.playerItem?.type != 'song' && player.currentPlayer?.properties?.subtitles?.length != 0" class="text-gray-400 hover:text-gray-200 active:text-primary transition-colors group relative">
                     <fa-icon [icon]="[player.currentPlayer?.properties?.subtitleenabled ? 'fas' : 'fas', 'closed-captioning']" ></fa-icon>
-                    <div class="floating-button-bottom-left pointer-group-button min-w-full">
-                        <div class="floating-list floating-button-top">
-                            <p class="whitespace-nowrap px-2 py-1 text-sm" translate="player.subtitles"></p>
-                            <p *ngFor="let subtitle of player.currentPlayer?.properties?.subtitles" (click)="player.currentPlayer?.toggleSubtitle()" class="floating-button {{ !player.currentPlayer?.properties?.subtitleenabled ? 'text-white' : 'text-gray-500 hover:text-white' }} text-sm" translate="player.disabled">
-                                
-                            </p>
-                            <p *ngFor="let subtitle of player.currentPlayer?.properties?.subtitles" (click)="player.currentPlayer?.setSubtitle(subtitle)" class="floating-button {{ (subtitle.index == player.currentPlayer?.properties?.currentsubtitle?.index) && player.currentPlayer?.properties?.subtitleenabled ? 'text-white' : 'text-gray-500 hover:text-white' }} text-sm">
+                    <div class="floating-button-bottom-right pointer-group-button min-w-full z-60">
+                        <div class="floating-list floating-button-top z-60">
+                            <p class="whitespace-nowrap px-2 py-1 text-xs z-60" translate="player.subtitles"></p>
+                            <p *ngFor="let subtitle of player.currentPlayer?.properties?.subtitles" (click)="player.currentPlayer?.toggleSubtitle()" class="floating-button z-60 {{ !player.currentPlayer?.properties?.subtitleenabled ? 'text-white' : 'text-gray-500 hover:text-white' }} text-xs" translate="player.disabled"></p>
+                            <p *ngFor="let subtitle of player.currentPlayer?.properties?.subtitles" (click)="player.currentPlayer?.setSubtitle(subtitle)" class="floating-button z-60 {{ (subtitle.index == player.currentPlayer?.properties?.currentsubtitle?.index) && player.currentPlayer?.properties?.subtitleenabled ? 'text-white' : 'text-gray-500 hover:text-white' }} text-xs">
                                 {{ subtitle.language }} {{ subtitle.isforced ? "(forcé)" : "" }}
                             </p>
-                            
                         </div>
                     </div>
-                </button>                   
-                  
+                </button>
             </div>
-
-
         </div>
 
-        
-        
-    </div>
-   
-    
-    <div *ngIf="player.currentPlayer?.playerItem" class="flex flex-col h-full sm:flex-col-reverse">
+        <!-- Row 2 -->
+        <div class="w-full flex items-center justify-between py-1">
+            <!-- Title -->
+            <div class="flex-1 min-w-0 mr-4">
+                <p *ngIf="player.currentPlayer?.playerItem?.type == 'movie'" class="text-sm font-semibold truncate">
+                    {{ player.currentPlayer?.playerItem?.title }}
+                </p>
+                <div *ngIf="player.currentPlayer?.playerItem?.type == 'episode'" class="truncate">
+                    <p class="text-sm font-semibold truncate">{{ player.currentPlayer?.playerItem?.showtitle }} - S{{ player.currentPlayer?.playerItem?.season }}E{{ player.currentPlayer?.playerItem?.episode }}</p>
+                </div>
+                <div *ngIf="player.currentPlayer?.playerItem?.type == 'song'" class="truncate">
+                    <p class="text-sm font-semibold truncate">{{ player.currentPlayer?.playerItem?.artist }} - {{ player.currentPlayer?.playerItem?.title }}</p>
+                </div>
+            </div>
 
-         <!-- Buttons -->
-
-         <div class="flex w-full h-full sm:w-auto justify-center items-center text-2xl sm:text-lg mt-4 sm:mt-6 sm:mb-2 px-8">
-
-            <!-- Previous media -->
-            <button (click)="player.currentPlayer?.goBackward()" class="button-primary absolute left-6 sm:left-4"><fa-icon [icon]="['fas', 'step-backward']"></fa-icon></button>
-
-            <!-- Stop player -->
-            <button (click)="player.currentPlayer?.stop();close()" class="button-primary mx-3"><fa-icon [icon]="['fas', 'stop']"></fa-icon></button> 
-
-            <!-- - seconds -->
-            <button (click)="player.currentPlayer?.setFixedSeek(-15)" class="button-primary mx-4"><fa-icon [icon]="['fas', 'undo']"></fa-icon></button> 
-
-            <!-- Toggle Play / Pause -->
-            <button class="button-primary mx-3 text-5xl sm:text-3xl" (click)="player.currentPlayer?.tooglePlayPause()" >
-                <fa-icon [icon]="['fas', player.currentPlayer?.isPlaying() ? 'pause' : 'play']"></fa-icon>
-            </button> 
-
-            <!-- + seconds -->
-            <button (click)="player.currentPlayer?.setFixedSeek(15)" class="button-primary mx-3"><fa-icon [icon]="['fas', 'redo']"></fa-icon></button>  
-            
-            <!-- Toggle show playlist -->
-            <button (click)="toggleDisplayPlaylist()" class="button-primary mx-3">
-                <fa-icon [icon]="['fas', 'bars']"></fa-icon>
-            </button>
-
-            <!-- Next media -->
-            <button (click)="player.currentPlayer?.goForward()" class="button-primary absolute right-6 sm:right-4"><fa-icon [icon]="['fas', 'step-forward']"></fa-icon></button> 
-
+            <!-- Times -->
+            <div class="text-xs text-gray-400 tabular-nums">
+                <span>{{ getSongDuration(player.currentPlayer?.properties?.time, player.currentPlayer?.playerItem?.type != 'song') }}</span>
+                <span class="mx-1">/</span>
+                <span>{{ getSongDuration(player.currentPlayer?.properties?.totaltime, player.currentPlayer?.playerItem?.type != 'song')}}</span>
+            </div>
         </div>
 
-        <!-- Seek Bar -->
-        <div class="w-full px-2 text-lg sm:text-sm mt-6 mb-4 sm:mb-0">      
-            <input #ref (change)="player.currentPlayer?.setSeek(ref.value)" class="w-full cursor-pointer" min="0" max="100" value="{{ player.currentPlayer?.properties?.percentage }}" type="range">
-            <div class="text-left w-full">
-                <button>{{ getSongDuration(player.currentPlayer?.properties?.time, player.currentPlayer?.playerItem?.type != 'song') }}</button>
-                <button class="float-right">{{ getSongDuration(player.currentPlayer?.properties?.totaltime, player.currentPlayer?.playerItem?.type != 'song')}}</button>
-            </div>
+        <!-- Row 3: Seekbar -->
+        <div class="w-full mb-1">
+            <input
+                #ref
+                (change)="player.currentPlayer?.setSeek(ref.value)"
+                class="w-full cursor-pointer player-seekbar"
+                min="0"
+                max="100"
+                value="{{ player.currentPlayer?.properties?.percentage }}"
+                type="range"
+                [ngStyle]="{'--seek-percent': (player.currentPlayer?.properties?.percentage ?? 0) + '%'}"
+            >
         </div>
 
     </div>
