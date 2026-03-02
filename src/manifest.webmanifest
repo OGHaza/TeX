@@ -1,8 +1,8 @@
 {
   "name": "TeX",
   "short_name": "TeX",
-  "theme_color": "#f59e0b",
-  "background_color": "#151515",
+  "theme_color": "#7cc7ff",
+  "background_color": "#11131a",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",

@@ -4,7 +4,8 @@
 @import 'tailwindcss/utilities';
 
 body {
-    color:white;
+    // One Dark Pro foreground (brighter for contrast on darker bg)
+    color: #cfd6e6;
     overflow: overlay;
     overscroll-behavior-x: none;
 }
@@ -71,6 +72,18 @@ button:focus, button:active:focus, button.active:focus {
 
 @layer utilities {
     @layer components {
+        .layout-gutter {
+            @apply px-3 sm:px-10;
+        }
+
+        .panel {
+            @apply bg-dark-gray;
+        }
+
+        .panel-bordered {
+            @apply bg-dark-gray border border-gray-700/50;
+        }
+
         .floating-container {
             @apply bg-dark-gray rounded-lg text-left absolute border border-gray-600 px-6 sm:px-4 py-4 bg-opacity-80;
         }
@@ -84,7 +97,11 @@ button:focus, button:active:focus, button.active:focus {
         }
 
         .player-box {
-            @apply bg-dark-gray right-0 w-full sm:max-w-md fixed h-screen sm:h-auto top-0 sm:top-auto flex flex-col justify-between p-4 pt-8 sm:pt-4;
+            @apply bg-dark-gray w-full relative flex flex-col justify-between py-2;
+        }
+
+        .player-height-spacer {
+            height: 108px;
         }
 
         .max-h-75 {
@@ -136,7 +153,7 @@ button:focus, button:active:focus, button.active:focus {
         @apply group-hover:opacity-100 group-hover:pointer-events-auto group-focus:opacity-100 group-focus:pointer-events-auto pointer-events-none cursor-pointer rounded-sm bg-dark-gray border-gray-200 border-opacity-20 border-2 max-h-52 overflow-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-400 opacity-0 transition-opacity duration-300;
 
         .floating-button {
-            @apply block whitespace-nowrap px-3 py-2.5 w-full font-semibold bg-dark-gray bg-opacity-100 hover:bg-gray-500 transition-all duration-300 text-sm group-hover:pointer-events-auto group-focus:pointer-events-auto pointer-events-none;
+            @apply block whitespace-nowrap px-3 py-2.5 w-full font-semibold bg-dark-gray bg-opacity-100 hover:bg-one-dark-hover hover:text-white transition-colors duration-200 text-sm group-hover:pointer-events-auto group-focus:pointer-events-auto pointer-events-none;
         
             * {
                 @apply cursor-pointer group-hover:pointer-events-auto group-focus:pointer-events-auto pointer-events-none;
@@ -184,7 +201,7 @@ body::-webkit-scrollbar {
 }
 
 .button-library-section {
-    @apply cursor-pointer bg-dark-gray hover:bg-gray-600 rounded-xl flex space-x-2 sm:space-x-0 sm:space-y-1 px-4 sm:px-6 py-2 sm:flex-col items-center justify-center sm:w-40 sm:h-24;
+    @apply cursor-pointer rounded-md px-2 py-1.5 flex items-center hover:bg-one-dark-hover hover:text-primary transition-colors duration-200;
 }
 
 

@@ -1,12 +1,32 @@
 const colors = require('tailwindcss/colors')
 
+// One Dark Pro (dark) inspired palette (darkened + punchier accents)
+// Ref base: VS Code One Dark Pro theme colors
+const oneDark = {
+  // darker background/surfaces (vs classic #282c34)
+  bg: '#11131a',
+  surface: '#171a23',
+  selection: '#2a2f3a',
+
+  // slightly brighter foreground for contrast on darker bg
+  fg: '#cfd6e6',
+  muted: '#7b8496',
+
+  // more saturated/brighter accents so highlights pop
+  blue: '#7cc7ff',
+  cyan: '#5de4ff',
+  green: '#9afc8b',
+  yellow: '#ffd37a',
+  red: '#ff6b81',
+  orange: '#ffb86c',
+  purple: '#d79bff',
+
+  // UI-specific surfaces
+  menu: '#0b0d12',
+  hover: '#22314a',
+}
+
 module.exports = {
-    // purge: {
-    //   enabled: process.env.NODE_ENV,
-    //   content: [
-    //       './src/**/*.{html,js}',
-    //   ],     
-    // },  
     content: [
       './src/**/*.{html,js}',
     ], 
@@ -14,10 +34,11 @@ module.exports = {
       
       extend: {
         colors: {
-          "dark-full": "#151515",
-          "dark-gray": "#2a2b2b",
+          "dark-full": oneDark.bg,
+          "dark-gray": oneDark.surface,
+          "one-dark": oneDark,
           gray: colors.neutral,
-          primary : "#f59e0b"
+          primary: oneDark.blue,
         },
         spacing: {
           '58': '14.5rem',
