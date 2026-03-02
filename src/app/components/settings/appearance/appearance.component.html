@@ -1,2 +1,95 @@
 <h3 class="settings-title" translate="settings.appearance.appearance"></h3>
+
+<h4 class="text-lg font-semibold pt-4 pb-2 text-gray-300" translate="settings.appearance.sectionVisibility"></h4>
+
+<div class="settings-section">
+    <div class="settings-subsection">
+        <p>Movies</p>
+        <app-switch [value]="showMoviesSection" (toggle)="toggleMoviesSection($event)"></app-switch>
+    </div>
     
+    <div class="settings-subsection">
+        <p>TV Shows</p>
+        <app-switch [value]="showTVSection" (toggle)="toggleTVSection($event)"></app-switch>
+    </div>
+    
+    <div class="settings-subsection">
+        <p>Music</p>
+        <app-switch [value]="showMusicSection" (toggle)="toggleMusicSection($event)"></app-switch>
+    </div>
+</div>
+
+<h4 class="text-lg font-semibold pt-4 pb-2 text-gray-300" translate="settings.appearance.moviesCarousels"></h4>
+
+<div class="settings-section">
+    <div class="settings-subsection">
+        <p translate="settings.appearance.continueWatching"></p>
+        <app-switch [value]="showContinueWatchingMovies" (toggle)="toggleContinueWatchingMovies($event)"></app-switch>
+    </div>
+    
+    <div class="settings-subsection">
+        <p translate="settings.appearance.recentlyAdded"></p>
+        <app-switch [value]="showRecentlyAdded" (toggle)="toggleRecentlyAdded($event)"></app-switch>
+    </div>
+    
+    <div class="settings-subsection">
+        <p translate="settings.appearance.unwatched"></p>
+        <app-switch [value]="showUnwatched" (toggle)="toggleUnwatched($event)"></app-switch>
+    </div>
+</div>
+
+<h4 class="text-lg font-semibold pt-4 pb-2 text-gray-300" translate="settings.appearance.tvCarousels"></h4>
+
+<div class="settings-section">
+    <div class="settings-subsection">
+        <p translate="settings.appearance.continueWatching"></p>
+        <app-switch [value]="showContinueWatchingTV" (toggle)="toggleContinueWatchingTV($event)"></app-switch>
+    </div>
+    
+    <div class="settings-subsection">
+        <p translate="settings.appearance.recentlyAdded"></p>
+        <app-switch [value]="showRecentlyAddedTV" (toggle)="toggleRecentlyAddedTV($event)"></app-switch>
+    </div>
+    
+    <div class="settings-subsection">
+        <p translate="settings.appearance.unwatched"></p>
+        <app-switch [value]="showUnwatchedTV" (toggle)="toggleUnwatchedTV($event)"></app-switch>
+    </div>
+</div>
+
+<h4 class="text-lg font-semibold pt-4 pb-2 text-gray-300">Genre Settings</h4>
+
+<div class="settings-section">
+    <div class="settings-subsection">
+        <p>Show Genre Carousels</p>
+        <app-switch [value]="showGenreCarousels" (toggle)="toggleGenreCarousels($event)"></app-switch>
+    </div>
+    <div class="settings-subsection">
+        <p>Sort by Recently Added</p>
+        <app-switch [value]="genreCarouselSortByRecentlyAdded" (toggle)="toggleGenreCarouselSort($event)"></app-switch>
+    </div>
+</div>
+
+<div *ngIf="showGenreCarousels" class="flex gap-8">
+    <!-- Genre Bar Column -->
+    <div class="flex-1">
+        <p class="text-sm text-gray-400 pb-2">Genre Bar:</p>
+        <div class="settings-section">
+            <div *ngFor="let genre of availableGenres" class="settings-subsection">
+                <p>{{ genre }}</p>
+                <app-switch [value]="isGenreBarEnabled(genre)" (toggle)="toggleGenreBar(genre, $event)"></app-switch>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Genre Carousel Column -->
+    <div class="flex-1">
+        <p class="text-sm text-gray-400 pb-2">Genre Carousels:</p>
+        <div class="settings-section">
+            <div *ngFor="let genre of availableGenres" class="settings-subsection">
+                <p>{{ genre }}</p>
+                <app-switch [value]="isCarouselEnabled(genre)" (toggle)="toggleCarousel(genre, $event)"></app-switch>
+            </div>
+        </div>
+    </div>
+</div>
